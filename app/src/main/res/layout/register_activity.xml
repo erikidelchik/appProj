@@ -6,10 +6,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primaryDark"
-    tools:context=".MainActivity">
+    tools:context=".Register">
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/register_button"
         android:layout_width="0dp"
         android:layout_height="59dp"
         android:layout_marginTop="24dp"
@@ -29,15 +29,18 @@
         app:strokeColor="@color/white" />
 
     <EditText
-        android:id="@+id/email_Input"
+        android:id="@+id/input_email"
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:layout_marginStart="24dp"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="28dp"
         android:layout_marginEnd="24dp"
+        android:background="@drawable/input_bg"
+        android:drawableLeft="@drawable/ic_email"
         android:ems="10"
         android:hint="Email"
         android:inputType="text"
+        android:paddingLeft="9dp"
         android:textColorHint="@color/white"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -49,25 +52,30 @@
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:layout_marginTop="24dp"
+        android:background="@drawable/input_bg"
         android:ems="10"
         android:hint="Username"
         android:inputType="text"
+        android:paddingLeft="9dp"
         android:textColorHint="@color/white"
-        app:layout_constraintEnd_toEndOf="@+id/email_Input"
+        app:layout_constraintEnd_toEndOf="@+id/input_email"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="@+id/email_Input"
-        app:layout_constraintTop_toBottomOf="@+id/email_Input" />
+        app:layout_constraintStart_toStartOf="@+id/input_email"
+        app:layout_constraintTop_toBottomOf="@+id/input_email" />
 
     <EditText
         android:id="@+id/input_pass"
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:layout_marginTop="24dp"
+        android:background="@drawable/input_bg"
         android:ems="10"
         android:hint="Password"
         android:inputType="text"
+        android:paddingLeft="9dp"
         android:textColorHint="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/input_username"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="@+id/input_username"
         app:layout_constraintTop_toBottomOf="@+id/input_username" />
 
@@ -76,9 +84,11 @@
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:layout_marginTop="20dp"
+        android:background="@drawable/input_bg"
         android:ems="10"
         android:hint="Confirm Password"
         android:inputType="text"
+        android:paddingLeft="9dp"
         android:textColorHint="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/input_pass"
         app:layout_constraintHorizontal_bias="0.0"
