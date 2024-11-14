@@ -28,7 +28,8 @@ public class Login extends AppCompatActivity {
         setContentView(R.layout.activity_login);
 
     }
-    private void login(String username,String password){
+
+    private boolean loginSuccessful(String username,String password){
         try {
             URL url = new URL("http://localhost/login.php");
 
@@ -37,7 +38,7 @@ public class Login extends AppCompatActivity {
             conn.setDoOutput(true);
 
 
-            //check if username and password exist in the database via the php server
+            //check if username and password exist in the database via the php server/script
             OutputStream os = conn.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
             String data = "username=" + URLEncoder.encode(username, "UTF-8") +
@@ -47,6 +48,7 @@ public class Login extends AppCompatActivity {
             writer.close();
             os.close();
 
+            //get response from the php server/script
             InputStream inputStream = conn.getInputStream();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
             StringBuilder result = new StringBuilder();
@@ -55,12 +57,15 @@ public class Login extends AppCompatActivity {
                 result.append(line);
             }
 
-            // Process the JSON response
-            JSONObject jsonResponse = new JSONObject(result.toString());
-            boolean success = jsonResponse.getBoolean("success");
+            if(result.toString().equals("success")){
+                return true;
+            }
+            else{
+                return false;
+            }
         }
         catch (Exception e) {
-            return;
+            return false;
         }
     }
 }

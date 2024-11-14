@@ -4,6 +4,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -26,29 +28,39 @@ import java.net.URLEncoder;
 
 public class Register extends AppCompatActivity {
 
-    private Button b1;
+    private Button register_button;
+    private TextView email,username,password;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.register_activity);
 
-        b1 = findViewById(R.id.register_button);
-        b1.setOnClickListener(new View.OnClickListener() {
+        register_button = findViewById(R.id.register_button);
+        email = findViewById(R.id.input_email);
+        username = findViewById(R.id.input_username);
+        password = findViewById(R.id.input_pass);
+
+        register_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Register.this,second.class);
-                startActivity(intent);
+                String result = signUpSuccessful(username.toString(),password.toString(),email.toString());
+                if(result.equals("success")){
+                    Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
+                    Intent intent = new Intent(getApplicationContext(), second.class);
+                    startActivity(intent);
+                }
+                else{
+                    Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
+                }
             }
-
-
         });
 
     }
 
-    private void login(String username,String password){
+    private String signUpSuccessful(String username,String password,String email){
         try {
-            URL url = new URL("http://localhost/login.php");
+            URL url = new URL("http://192.168.1.205/LoginRegister/newSignup.php");
 
             HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setRequestMethod("POST");
@@ -59,7 +71,8 @@ public class Register extends AppCompatActivity {
             OutputStream os = conn.getOutputStream();
             BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
             String data = "username=" + URLEncoder.encode(username, "UTF-8") +
-                    "&password=" + URLEncoder.encode(password, "UTF-8");
+                    "&password=" + URLEncoder.encode(password, "UTF-8")+
+                    "&email=" + URLEncoder.encode(email, "UTF-8");
             writer.write(data);
             writer.flush();
             writer.close();
@@ -73,12 +86,10 @@ public class Register extends AppCompatActivity {
                 result.append(line);
             }
 
-            // Process the JSON response
-            JSONObject jsonResponse = new JSONObject(result.toString());
-            boolean success = jsonResponse.getBoolean("success");
+            return result.toString();
         }
         catch (Exception e) {
-            return;
+            return "something went wrong, try again";
         }
     }
 }
