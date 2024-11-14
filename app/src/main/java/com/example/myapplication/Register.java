@@ -2,6 +2,8 @@ package com.example.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -25,11 +27,15 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 public class Register extends AppCompatActivity {
 
     private Button register_button;
-    private TextView email,username,password;
+    private TextView email,username,password,passwordConform;
+
+    private String email_p,username_p,password_p,passwordConform_p;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,59 +43,76 @@ public class Register extends AppCompatActivity {
         setContentView(R.layout.register_activity);
 
         register_button = findViewById(R.id.register_button);
+
         email = findViewById(R.id.input_email);
         username = findViewById(R.id.input_username);
         password = findViewById(R.id.input_pass);
+        passwordConform = findViewById(R.id.input_passConfrm);
 
         register_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String result = signUpSuccessful(username.toString(),password.toString(),email.toString());
-                if(result.equals("success")){
-                    Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
-                    Intent intent = new Intent(getApplicationContext(), second.class);
-                    startActivity(intent);
-                }
-                else{
-                    Toast.makeText(getApplicationContext(),result,Toast.LENGTH_SHORT).show();
-                }
+                ExecutorService executor = Executors.newSingleThreadExecutor();
+                Handler handler = new Handler(Looper.getMainLooper());
+
+                email_p = email.getText().toString();
+                username_p = username.getText().toString();
+                password_p = password.getText().toString();
+                passwordConform_p = password.getText().toString();
+
+
+
+                executor.execute(()->{
+                    StringBuilder result = new StringBuilder();
+
+                    try {
+
+                        URL url = new URL("http://192.168.1.205/LoginRegister/newSignup.php");
+
+                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                        conn.setRequestMethod("POST");
+                        conn.setDoOutput(true);
+
+
+                        //check if username and password exist in the database via the php server
+                        OutputStream os = conn.getOutputStream();
+                        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                        String data = "username=" + URLEncoder.encode(username.getText().toString(), "UTF-8") +
+                                "&password=" + URLEncoder.encode(password.getText().toString(), "UTF-8")+
+                                "&email=" + URLEncoder.encode(email.getText().toString(), "UTF-8");
+                        writer.write(data);
+                        writer.flush();
+                        writer.close();
+                        os.close();
+
+                        InputStream inputStream = conn.getInputStream();
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                        String line;
+                        while ((line = reader.readLine()) != null) {
+                            result.append(line);
+                        }
+                    }
+                    catch (Exception e) {
+                        Toast.makeText(getApplicationContext(),"something went wrong, try again",Toast.LENGTH_SHORT).show();
+                    }
+
+                    handler.post(()->{
+                        if(result.toString().equals("success")){
+                            Toast.makeText(getApplicationContext(),result.toString(),Toast.LENGTH_SHORT).show();
+                            Intent intent = new Intent(getApplicationContext(), second.class);
+                            startActivity(intent);
+                        }
+                        else{
+                            Toast.makeText(getApplicationContext(),result.toString(),Toast.LENGTH_SHORT).show();
+                        }
+                    });
+                });
+
+
+
             }
         });
 
-    }
-
-    private String signUpSuccessful(String username,String password,String email){
-        try {
-            URL url = new URL("http://192.168.1.205/LoginRegister/newSignup.php");
-
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-            conn.setRequestMethod("POST");
-            conn.setDoOutput(true);
-
-
-            //check if username and password exist in the database via the php server
-            OutputStream os = conn.getOutputStream();
-            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-            String data = "username=" + URLEncoder.encode(username, "UTF-8") +
-                    "&password=" + URLEncoder.encode(password, "UTF-8")+
-                    "&email=" + URLEncoder.encode(email, "UTF-8");
-            writer.write(data);
-            writer.flush();
-            writer.close();
-            os.close();
-
-            InputStream inputStream = conn.getInputStream();
-            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-            StringBuilder result = new StringBuilder();
-            String line;
-            while ((line = reader.readLine()) != null) {
-                result.append(line);
-            }
-
-            return result.toString();
-        }
-        catch (Exception e) {
-            return "something went wrong, try again";
-        }
     }
 }
