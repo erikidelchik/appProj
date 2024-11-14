@@ -60,59 +60,78 @@ public class Register extends AppCompatActivity {
                 password_p = password.getText().toString();
                 passwordConform_p = password.getText().toString();
 
-                //insert check parameters function here!!!!!!!!!!!!!!
+                //if all fields are valid
+                String fieldsResult = checkIfAllFieldsValid(email_p,username_p,password_p,passwordConform_p);
+                if(fieldsResult.equals("all valid")){
 
-                executor.execute(()->{
-                    StringBuilder result = new StringBuilder();
+                    executor.execute(() -> {
+                        StringBuilder result = new StringBuilder();
 
-                    try {
+                        try {
 
-                        URL url = new URL("http://192.168.1.205/LoginRegister/newSignup.php");
+                            URL url = new URL("http://192.168.1.205/LoginRegister/newSignup.php");
 
-                        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                        conn.setRequestMethod("POST");
-                        conn.setDoOutput(true);
+                            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                            conn.setRequestMethod("POST");
+                            conn.setDoOutput(true);
 
 
-                        //check if username and password exist in the database via the php server
-                        OutputStream os = conn.getOutputStream();
-                        BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                        String data = "username=" + URLEncoder.encode(username_p, "UTF-8") +
-                                "&password=" + URLEncoder.encode(password_p, "UTF-8")+
-                                "&email=" + URLEncoder.encode(email_p, "UTF-8");
-                        writer.write(data);
-                        writer.flush();
-                        writer.close();
-                        os.close();
+                            //check if username and password exist in the database via the php server
+                            OutputStream os = conn.getOutputStream();
+                            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
+                            String data = "username=" + URLEncoder.encode(username_p, "UTF-8") +
+                                    "&password=" + URLEncoder.encode(password_p, "UTF-8") +
+                                    "&email=" + URLEncoder.encode(email_p, "UTF-8");
+                            writer.write(data);
+                            writer.flush();
+                            writer.close();
+                            os.close();
 
-                        InputStream inputStream = conn.getInputStream();
-                        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                            InputStream inputStream = conn.getInputStream();
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
 
-                        String line;
-                        while ((line = reader.readLine()) != null) {
-                            result.append(line);
+                            String line;
+                            while ((line = reader.readLine()) != null) {
+                                result.append(line);
+                            }
+                        } catch (Exception e) {
+                            Toast.makeText(getApplicationContext(), "something went wrong, try again", Toast.LENGTH_SHORT).show();
                         }
-                    }
-                    catch (Exception e) {
-                        Toast.makeText(getApplicationContext(),"something went wrong, try again",Toast.LENGTH_SHORT).show();
-                    }
 
-                    handler.post(()->{
-                        if(result.toString().equals("success")){
-                            Toast.makeText(getApplicationContext(),result.toString(),Toast.LENGTH_SHORT).show();
-                            Intent intent = new Intent(getApplicationContext(), second.class);
-                            startActivity(intent);
-                        }
-                        else{
-                            Toast.makeText(getApplicationContext(),result.toString(),Toast.LENGTH_SHORT).show();
-                        }
+                        handler.post(() -> {
+                            //php script result
+                            if (result.toString().equals("success")) {
+                                Toast.makeText(getApplicationContext(), result.toString(), Toast.LENGTH_SHORT).show();
+                                Intent intent = new Intent(getApplicationContext(), second.class);
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(getApplicationContext(), result.toString(), Toast.LENGTH_SHORT).show();
+                            }
+                        });
                     });
-                });
+                }
 
+                else{
+                    Toast.makeText(getApplicationContext(), fieldsResult, Toast.LENGTH_SHORT).show();
+                }
 
 
             }
         });
+
+    }
+    public String checkIfAllFieldsValid(String email,String username,String password,String confPass){
+        if(!email.isEmpty() && !username.isEmpty() && !password.isEmpty() && !confPass.isEmpty()){
+            if(password.equals(confPass)){
+                return "all valid";
+            }
+            else{
+                return "passwords are not matching";
+            }
+        }
+        else{
+            return "all fields must be filled";
+        }
 
     }
 }
