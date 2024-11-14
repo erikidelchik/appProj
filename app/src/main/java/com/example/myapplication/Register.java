@@ -60,7 +60,7 @@ public class Register extends AppCompatActivity {
                 password_p = password.getText().toString();
                 passwordConform_p = password.getText().toString();
 
-
+                //insert check parameters function here!!!!!!!!!!!!!!
 
                 executor.execute(()->{
                     StringBuilder result = new StringBuilder();
@@ -77,9 +77,9 @@ public class Register extends AppCompatActivity {
                         //check if username and password exist in the database via the php server
                         OutputStream os = conn.getOutputStream();
                         BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                        String data = "username=" + URLEncoder.encode(username.getText().toString(), "UTF-8") +
-                                "&password=" + URLEncoder.encode(password.getText().toString(), "UTF-8")+
-                                "&email=" + URLEncoder.encode(email.getText().toString(), "UTF-8");
+                        String data = "username=" + URLEncoder.encode(username_p, "UTF-8") +
+                                "&password=" + URLEncoder.encode(password_p, "UTF-8")+
+                                "&email=" + URLEncoder.encode(email_p, "UTF-8");
                         writer.write(data);
                         writer.flush();
                         writer.close();
