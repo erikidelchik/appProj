@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -11,20 +12,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.concurrent.ExecutorService;
@@ -58,7 +52,7 @@ public class Register extends AppCompatActivity {
                 email_p = email.getText().toString();
                 username_p = username.getText().toString();
                 password_p = password.getText().toString();
-                passwordConform_p = password.getText().toString();
+                passwordConform_p = passwordConform.getText().toString();
 
                 //if all fields are valid
                 String fieldsResult = checkIfAllFieldsValid(email_p,username_p,password_p,passwordConform_p);
@@ -106,6 +100,7 @@ public class Register extends AppCompatActivity {
                                 startActivity(intent);
                             } else {
                                 Toast.makeText(getApplicationContext(), result.toString(), Toast.LENGTH_SHORT).show();
+                                Log.d("MyTag", result.toString());
                             }
                         });
                     });

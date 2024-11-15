@@ -5,7 +5,7 @@
     android:id="@+id/register_screen"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primaryDark"
+    android:background="@drawable/background"
     tools:context=".Register">
 
     <Button
@@ -45,7 +45,7 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/logo_register" />
+        app:layout_constraintTop_toBottomOf="@+id/logo_login" />
 
     <EditText
         android:id="@+id/input_username"
@@ -53,6 +53,7 @@
         android:layout_height="56dp"
         android:layout_marginTop="24dp"
         android:background="@drawable/input_bg"
+        android:drawableLeft="@drawable/ic_person"
         android:ems="10"
         android:hint="Username"
         android:inputType="text"
@@ -69,6 +70,7 @@
         android:layout_height="56dp"
         android:layout_marginTop="24dp"
         android:background="@drawable/input_bg"
+        android:drawableLeft="@drawable/ic_password"
         android:ems="10"
         android:hint="Password"
         android:inputType="text"
@@ -83,8 +85,9 @@
         android:id="@+id/input_passConfrm"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="20dp"
+        android:layout_marginTop="24dp"
         android:background="@drawable/input_bg"
+        android:drawableLeft="@drawable/ic_password"
         android:ems="10"
         android:hint="Confirm Password"
         android:inputType="text"
@@ -96,7 +99,7 @@
         app:layout_constraintTop_toBottomOf="@+id/input_pass" />
 
     <TextView
-        android:id="@+id/logo_register"
+        android:id="@+id/logo_login"
         android:layout_width="143dp"
         android:layout_height="54dp"
         android:text="Register"
