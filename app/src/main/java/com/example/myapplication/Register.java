@@ -96,7 +96,7 @@ public class Register extends AppCompatActivity {
                             //php script result
                             if (result.toString().equals("success")) {
                                 Toast.makeText(getApplicationContext(), result.toString(), Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(getApplicationContext(), second.class);
+                                Intent intent = new Intent(getApplicationContext(), Login.class);
                                 startActivity(intent);
                             } else {
                                 Toast.makeText(getApplicationContext(), result.toString(), Toast.LENGTH_SHORT).show();

@@ -5,6 +5,48 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    android:background="@drawable/background">
 
+    <Button
+        android:id="@+id/main_login_button"
+        android:layout_width="160dp"
+        android:layout_height="65dp"
+        android:text="Log in"
+        android:textColor="@color/black"
+        android:textColorLink="@color/black"
+        android:textSize="27dp"
+        android:textStyle="bold|italic"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <Button
+        android:id="@+id/main_register_button"
+        android:layout_width="0dp"
+        android:layout_height="65dp"
+        android:layout_marginTop="24dp"
+        android:text="Register"
+        android:textColor="@color/black"
+        android:textSize="27dp"
+        android:textStyle="bold|italic"
+        app:layout_constraintEnd_toEndOf="@+id/main_login_button"
+        app:layout_constraintStart_toStartOf="@+id/main_login_button"
+        app:layout_constraintTop_toBottomOf="@+id/main_login_button" />
+
+    <TextView
+        android:id="@+id/textView2"
+        android:layout_width="249dp"
+        android:layout_height="104dp"
+        android:text="Welcome!"
+        android:textColor="@color/white"
+        android:textSize="45dp"
+        android:textStyle="bold"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.595"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.239" />
 </androidx.constraintlayout.widget.ConstraintLayout>
