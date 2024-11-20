@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "512947730295",
+    "project_id": "my-phone-app-eacea",
+    "storage_bucket": "my-phone-app-eacea.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:512947730295:android:f8a0a30959d30aa566d372",
+        "android_client_info": {
+          "package_name": "com.example.myapplication"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC0U6_wILeRReK1CJtP2j9t34R_pkbV82c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
