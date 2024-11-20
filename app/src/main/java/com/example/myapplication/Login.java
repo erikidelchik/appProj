@@ -10,94 +10,97 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
 
 public class Login extends AppCompatActivity {
 
-    private Button login_button;
-    private TextView username,password;
+    private TextView username, password, registerText;
+    private Button loginButton;
 
-    private String username_p,password_p;
+    private FirebaseAuth auth;
+    private FirebaseFirestore database;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        login_button = findViewById(R.id.login_button);
-
         username = findViewById(R.id.input_username);
         password = findViewById(R.id.input_pass);
+        loginButton = findViewById(R.id.login_button);
+        registerText = findViewById(R.id.register_text);
 
-        login_button.setOnClickListener(new View.OnClickListener() {
+        auth = FirebaseAuth.getInstance();
+        database = FirebaseFirestore.getInstance();
+
+        registerText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                ExecutorService executor = Executors.newSingleThreadExecutor();
-                Handler handler = new Handler(Looper.getMainLooper());
-
-                username_p = username.getText().toString();
-                password_p = password.getText().toString();
-
-                    executor.execute(() -> {
-                        StringBuilder result = new StringBuilder();
-                        try {
-
-                            URL url = new URL("http://192.168.1.205/LoginRegister/newLogin.php");
-
-                            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-                            conn.setRequestMethod("POST");
-                            conn.setDoOutput(true);
-
-
-                            //check if username and password exist in the database via the php server
-                            OutputStream os = conn.getOutputStream();
-                            BufferedWriter writer = new BufferedWriter(new OutputStreamWriter(os, "UTF-8"));
-                            String data = "username=" + URLEncoder.encode(username_p, "UTF-8") +
-                                    "&password=" + URLEncoder.encode(password_p, "UTF-8");
-                            writer.write(data);
-                            writer.flush();
-                            writer.close();
-                            os.close();
-
-                            InputStream inputStream = conn.getInputStream();
-                            BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                            String line;
-                            while ((line = reader.readLine()) != null) {
-                                result.append(line);
-                            }
-                        } catch (Exception e) {
-                            Toast.makeText(getApplicationContext(), "something went wrong, try again", Toast.LENGTH_SHORT).show();
-                        }
-
-                        handler.post(() -> {
-                            //php script result
-                            if (result.toString().equals("success")) {
-                                Toast.makeText(getApplicationContext(), result.toString(), Toast.LENGTH_SHORT).show();
-                                Intent intent = new Intent(getApplicationContext(), second.class);
-                                startActivity(intent);
-                            } else {
-                                Toast.makeText(getApplicationContext(), result.toString(), Toast.LENGTH_SHORT).show();
-                                Log.d("MyTag", result.toString());
-                            }
-                        });
-                    });
-
+                Intent intent = new Intent(Login.this,Register.class);
+                startActivity(intent);
+                finish();
             }
         });
 
+
+        loginButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String username_p = username.getText().toString().trim();
+                String password_p = password.getText().toString().trim();
+
+                if (username_p.isEmpty() || password_p.isEmpty()) {
+                    Toast.makeText(Login.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+
+                // get the email associated with the username
+                database.collection("users")
+                        .whereEqualTo("username", username_p)
+                        .get()
+                        .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                if (task.isSuccessful() && !task.getResult().isEmpty()) {
+                                    // get the email associated with the username
+                                    DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                                    String email = document.getString("email");
+
+                                    // login with password
+                                    loginWithEmail(email, password_p);
+                                } else {
+                                    // Username not found
+                                    Toast.makeText(Login.this, "Username not found", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                        });
+            }
+        });
+    }
+
+    private void loginWithEmail(String email, String password) {
+        auth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        // Login successful
+                        Toast.makeText(Login.this, "Login successful", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(Login.this, second.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        // Login failed
+                        Toast.makeText(Login.this, "Invalid password", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
