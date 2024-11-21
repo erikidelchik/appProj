@@ -99,7 +99,7 @@ public class Login extends AppCompatActivity {
                         finish();
                     } else {
                         // Login failed
-                        Toast.makeText(Login.this, "Invalid password", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(Login.this, "wrong username or password", Toast.LENGTH_SHORT).show();
                     }
                 });
     }
