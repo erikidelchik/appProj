@@ -9,9 +9,11 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.window.OnBackInvokedDispatcher;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -59,6 +61,7 @@ public class Register extends AppCompatActivity {
         register_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                register_button.setEnabled(false);
 
                 email_p = email.getText().toString();
                 username_p = username.getText().toString();
@@ -73,13 +76,15 @@ public class Register extends AppCompatActivity {
                     return;
                 }
 
-                //if username doesn't exist in the database
+                //check if username exist in the database
                 database.collection("users")
                         .whereEqualTo("username",username_p)
                         .get() //execute the query
                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                register_button.setEnabled(true);
+
                                 if(task.isSuccessful() && task.getResult()!= null && !task.getResult().isEmpty()){
                                     Toast.makeText(Register.this, "username already exist", Toast.LENGTH_SHORT).show();
                                 }
@@ -152,4 +157,5 @@ public class Register extends AppCompatActivity {
         }
 
     }
+
 }

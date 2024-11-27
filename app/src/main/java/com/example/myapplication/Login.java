@@ -2,9 +2,6 @@ package com.example.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
@@ -16,9 +13,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 
@@ -29,6 +26,18 @@ public class Login extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseFirestore database;
+
+//    @Override
+//    public void onStart() {
+//        super.onStart();
+//        // Check if user is signed in (non-null) and update UI accordingly.
+//        FirebaseUser currentUser = auth.getCurrentUser();
+//        if(currentUser!=null){
+//            Intent intent = new Intent(this, MainMenu.class);
+//            startActivity(intent);
+//            finish();
+//        }
+//    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,7 +57,6 @@ public class Login extends AppCompatActivity {
             public void onClick(View v) {
                 Intent intent = new Intent(Login.this,Register.class);
                 startActivity(intent);
-                finish();
             }
         });
 
@@ -56,6 +64,7 @@ public class Login extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loginButton.setEnabled(false);
                 String username_p = username.getText().toString().trim();
                 String password_p = password.getText().toString().trim();
 
@@ -64,23 +73,29 @@ public class Login extends AppCompatActivity {
                     return;
                 }
 
-                // get the email associated with the username
+                // Get the email associated with the username
                 database.collection("users")
                         .whereEqualTo("username", username_p)
                         .get()
                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                if (task.isSuccessful() && !task.getResult().isEmpty()) {
-                                    // get the email associated with the username
-                                    DocumentSnapshot document = task.getResult().getDocuments().get(0);
-                                    String email = document.getString("email");
+                                loginButton.setEnabled(true);
+                                if (task.isSuccessful()) {
+                                    if (!task.getResult().isEmpty()) {
+                                        // Username found
+                                        DocumentSnapshot document = task.getResult().getDocuments().get(0);
+                                        String email = document.getString("email");
 
-                                    // login with password
-                                    loginWithEmail(email, password_p);
+                                        // Login with email and password
+                                        authenticateUser(email, password_p);
+                                    } else {
+                                        // Username not found
+                                        Toast.makeText(Login.this, "Username not found", Toast.LENGTH_SHORT).show();
+                                    }
                                 } else {
-                                    // Username not found
-                                    Toast.makeText(Login.this, "Username not found", Toast.LENGTH_SHORT).show();
+                                    // Firestore query failed
+                                    Toast.makeText(Login.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                 }
                             }
                         });
@@ -88,13 +103,13 @@ public class Login extends AppCompatActivity {
         });
     }
 
-    private void loginWithEmail(String email, String password) {
+    private void authenticateUser(String email, String password) {
         auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // Login successful
                         Toast.makeText(Login.this, "Login successful", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(Login.this, second.class);
+                        Intent intent = new Intent(Login.this, MainMenu.class);
                         startActivity(intent);
                         finish();
                     } else {
