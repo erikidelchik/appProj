@@ -32,14 +32,15 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
 
         auth = FirebaseAuth.getInstance();
 
+        FirebaseUser currentUser = auth.getCurrentUser();
+
 
         NavigationView navigationView = findViewById(R.id.nav_view);
 
         // Access the header view
-        TextView uname = navigationView.findViewById(R.id.nameOfUser);
+        View headerView = navigationView.getHeaderView(0); // Get the first header view
 
-
-        FirebaseUser currentUser = auth.getCurrentUser();
+        TextView uname = headerView.findViewById(R.id.nameOfUser);
 
         // Check if the user is not null and set the email
         if (currentUser != null && currentUser.getEmail() != null) {
@@ -67,11 +68,17 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId()==R.id.nav_home){
+        if(item.getItemId()==R.id.nav_profile){
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
+        }
+        else if(item.getItemId()==R.id.nav_home){
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
         }
         else if(item.getItemId()==R.id.nav_settings){
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new SettingsFragment()).commit();
+        }
+        else if(item.getItemId()==R.id.nav_about){
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new AboutFragment()).commit();
         }
         else if(item.getItemId()==R.id.nav_logout){
             auth.signOut();
@@ -79,6 +86,8 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
             startActivity(intent);
             finish();
         }
+
+        //GravityCompat.START defines which drawer to close (start- most left drawer)
         drawerLayout.closeDrawer(GravityCompat.START);
         return true;
     }

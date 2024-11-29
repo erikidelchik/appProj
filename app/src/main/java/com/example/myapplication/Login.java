@@ -27,17 +27,17 @@ public class Login extends AppCompatActivity {
     private FirebaseAuth auth;
     private FirebaseFirestore database;
 
-//    @Override
-//    public void onStart() {
-//        super.onStart();
-//        // Check if user is signed in (non-null) and update UI accordingly.
-//        FirebaseUser currentUser = auth.getCurrentUser();
-//        if(currentUser!=null){
-//            Intent intent = new Intent(this, MainMenu.class);
-//            startActivity(intent);
-//            finish();
-//        }
-//    }
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if(currentUser!=null){
+            Intent intent = new Intent(this, MainMenu.class);
+            startActivity(intent);
+            finish();
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,7 +64,7 @@ public class Login extends AppCompatActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                loginButton.setEnabled(false);
+
                 String username_p = username.getText().toString().trim();
                 String password_p = password.getText().toString().trim();
 
@@ -73,6 +73,7 @@ public class Login extends AppCompatActivity {
                     return;
                 }
 
+                loginButton.setEnabled(false);
                 // Get the email associated with the username
                 database.collection("users")
                         .whereEqualTo("username", username_p)
@@ -93,7 +94,8 @@ public class Login extends AppCompatActivity {
                                         // Username not found
                                         Toast.makeText(Login.this, "Username not found", Toast.LENGTH_SHORT).show();
                                     }
-                                } else {
+                                }
+                                else {
                                     // Firestore query failed
                                     Toast.makeText(Login.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                                 }

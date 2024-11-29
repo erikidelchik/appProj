@@ -6,7 +6,6 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/background"
     android:fitsSystemWindows="true"
     tools:openDrawer="start"
     tools:context=".MainMenu"
@@ -23,7 +22,7 @@
             android:id="@+id/toolbar"
             android:elevation="40dp"
             android:background="@color/orangelight"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
+            android:theme="@style/Theme.MaterialComponents.DayNight.NoActionBar"
             app:popupTheme="@style/Theme.AppCompat.Light"/>
         <FrameLayout
             android:layout_width="match_parent"

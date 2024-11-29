@@ -35,9 +35,9 @@ import java.util.Map;
 public class Register extends AppCompatActivity {
 
     private Button register_button;
-    private TextView email,username,password,passwordConform;
+    private TextView email, username, password, passwordConform;
 
-    private String email_p,username_p,password_p,passwordConform_p;
+    private String email_p, username_p, password_p, passwordConform_p;
 
     FirebaseAuth auth;
     FirebaseFirestore database;
@@ -61,7 +61,6 @@ public class Register extends AppCompatActivity {
         register_button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                register_button.setEnabled(false);
 
                 email_p = email.getText().toString();
                 username_p = username.getText().toString();
@@ -69,27 +68,26 @@ public class Register extends AppCompatActivity {
                 passwordConform_p = passwordConform.getText().toString();
 
                 //if all fields are valid
-                String fieldsResult = checkIfAllFieldsValid(email_p,username_p,password_p,passwordConform_p);
+                String fieldsResult = checkIfAllFieldsValid(email_p, username_p, password_p, passwordConform_p);
 
-                if(!fieldsResult.equals("all valid")){
-                    Toast.makeText(Register.this,fieldsResult,Toast.LENGTH_SHORT).show();
+                if (!fieldsResult.equals("all valid")) {
+                    Toast.makeText(Register.this, fieldsResult, Toast.LENGTH_SHORT).show();
                     return;
                 }
-
+                register_button.setEnabled(false);
                 //check if username exist in the database
                 database.collection("users")
-                        .whereEqualTo("username",username_p)
+                        .whereEqualTo("username", username_p)
                         .get() //execute the query
                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
                                 register_button.setEnabled(true);
 
-                                if(task.isSuccessful() && task.getResult()!= null && !task.getResult().isEmpty()){
+                                if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
                                     Toast.makeText(Register.this, "username already exist", Toast.LENGTH_SHORT).show();
-                                }
-                                else {
-                                    registerUser(email_p,username_p,password_p);
+                                } else {
+                                    registerUser(email_p, username_p, password_p);
                                 }
                             }
                         });
@@ -135,24 +133,21 @@ public class Register extends AppCompatActivity {
                                             }
                                         });
                             }
-                        }
-                        else {
+                        } else {
                             Toast.makeText(Register.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
 
-    public String checkIfAllFieldsValid(String email,String username,String password,String confPass){
-        if(!email.isEmpty() && !username.isEmpty() && !password.isEmpty() && !confPass.isEmpty()){
-            if(password.equals(confPass)){
+    public String checkIfAllFieldsValid(String email, String username, String password, String confPass) {
+        if (!email.isEmpty() && !username.isEmpty() && !password.isEmpty() && !confPass.isEmpty()) {
+            if (password.equals(confPass)) {
                 return "all valid";
-            }
-            else{
+            } else {
                 return "passwords are not matching";
             }
-        }
-        else{
+        } else {
             return "all fields must be filled";
         }
 

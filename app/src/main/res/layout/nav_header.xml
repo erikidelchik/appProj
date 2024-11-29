@@ -10,10 +10,13 @@
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
     <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/profilePic"
         android:layout_width="75dp"
         android:layout_height="75dp"
         android:src="@drawable/blank_profile_picture"
-        app:shapeAppearanceOverlay="@style/roundedImgView"/>
+        app:shapeAppearanceOverlay="@style/roundedImgView"
+        app:strokeColor="@color/black"
+        android:padding="5dp"/>
 
 
     <TextView
@@ -21,7 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/black"
-        android:textSize="16dp"
+        android:textSize="16sp"
         android:text=""
         android:textStyle="bold"/>
 
