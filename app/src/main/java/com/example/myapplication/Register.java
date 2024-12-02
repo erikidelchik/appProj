@@ -114,19 +114,19 @@ public class Register extends AppCompatActivity {
                                 userData.put("username", username);
                                 userData.put("email", email);
 
-                                database.collection("users")
-                                        .add(userData)
-                                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                database.collection("users").document(userId)
+                                        .set(userData)
+                                        .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
-                                            public void onSuccess(DocumentReference documentReference) {
+                                            public void onSuccess(Void unused) {
                                                 Toast.makeText(Register.this, "Account created successfully!", Toast.LENGTH_SHORT).show();
                                                 // Navigate to Login
                                                 Intent intent = new Intent(Register.this, Login.class);
                                                 startActivity(intent);
                                                 finish();
+
                                             }
-                                        })
-                                        .addOnFailureListener(new OnFailureListener() {
+                                        }).addOnFailureListener(new OnFailureListener() {
                                             @Override
                                             public void onFailure(@NonNull Exception e) {
                                                 Toast.makeText(Register.this, e.toString(), Toast.LENGTH_SHORT).show();

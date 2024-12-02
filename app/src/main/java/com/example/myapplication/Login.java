@@ -21,7 +21,7 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 public class Login extends AppCompatActivity {
 
-    private TextView username, password, registerText;
+    private TextView username, password, registerText, error_text;
     private Button loginButton;
 
     private FirebaseAuth auth;
@@ -48,6 +48,7 @@ public class Login extends AppCompatActivity {
         password = findViewById(R.id.input_pass);
         loginButton = findViewById(R.id.login_button);
         registerText = findViewById(R.id.register_text);
+        error_text = findViewById(R.id.error_text_view);
 
         auth = FirebaseAuth.getInstance();
         database = FirebaseFirestore.getInstance();
@@ -69,7 +70,7 @@ public class Login extends AppCompatActivity {
                 String password_p = password.getText().toString().trim();
 
                 if (username_p.isEmpty() || password_p.isEmpty()) {
-                    Toast.makeText(Login.this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
+                    error_text.setText("Please fill in all fields");
                     return;
                 }
 
@@ -92,12 +93,11 @@ public class Login extends AppCompatActivity {
                                         authenticateUser(email, password_p);
                                     } else {
                                         // Username not found
-                                        Toast.makeText(Login.this, "Username not found", Toast.LENGTH_SHORT).show();
+                                        error_text.setText("Username not found");
                                     }
                                 }
                                 else {
-                                    // Firestore query failed
-                                    Toast.makeText(Login.this, "Error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    error_text.setText("Error: " + task.getException().getMessage());
                                 }
                             }
                         });
@@ -110,13 +110,14 @@ public class Login extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // Login successful
+                        error_text.setText("");
                         Toast.makeText(Login.this, "Login successful", Toast.LENGTH_SHORT).show();
                         Intent intent = new Intent(Login.this, MainMenu.class);
                         startActivity(intent);
                         finish();
                     } else {
                         // Login failed
-                        Toast.makeText(Login.this, "wrong username or password", Toast.LENGTH_SHORT).show();
+                        error_text.setText("wrong username or password");
                     }
                 });
     }

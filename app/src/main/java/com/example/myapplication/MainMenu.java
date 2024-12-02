@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -47,6 +48,8 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
         // Check if the user is not null and set the username
         if (currentUser != null) {
             String userId = currentUser.getUid(); // Get the authenticated user's UID
+            Log.d("DEBUG", "User ID: " + userId);
+
 
             // Get the user's document from Firestore
             db.collection("users").document(userId)
@@ -58,6 +61,10 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
 
                             // Set the username to the TextView
                             uname.setText(username);
+                        }
+                        else{
+                            Log.d("DEBUG", "Document does not exist for UID: " + userId);
+                            uname.setText("not logged in");
                         }
                     });
         }
