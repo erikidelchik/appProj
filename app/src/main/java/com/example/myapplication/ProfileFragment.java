@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,9 +81,9 @@ public class ProfileFragment extends Fragment {
             public void onClick(View v) {
                 if(currentUser!=null) {
                     ImagePicker.with(requireActivity())
-                            .crop()
-                            .compress(1024)
-                            .maxResultSize(1080, 1080)
+                            .crop(1f,1f)
+                            .compress(512)
+                            .maxResultSize(256, 256)
                             .createIntent(intent -> {
                                 imagePickerLauncher.launch(intent); // Launch the picker and wait for the result
                                 return null;
@@ -109,7 +110,7 @@ public class ProfileFragment extends Fragment {
 
         // Define the path where the image will be stored
         String userId = currentUser.getUid();
-        StorageReference imageRef = storageRef.child("images/" + userId + ".jpg");
+        StorageReference imageRef = storageRef.child("images/" + userId);
 
         // Upload the image to Firebase Storage
         imageRef.putFile(imageUri)
@@ -149,17 +150,17 @@ public class ProfileFragment extends Fragment {
                 .addOnSuccessListener(documentSnapshot -> {
                     if (documentSnapshot.exists()) {
                         String profilePictureUrl = documentSnapshot.getString("profilePicture");
-                        if (profilePictureUrl != null) {
+                        if (profilePictureUrl != null && !profilePictureUrl.isEmpty()) {
                             // Load the image using Glide
                             Glide.with(requireContext())
                                     .load(profilePictureUrl)
                                     .into(profPic);
                         }
                     }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(requireContext(), "Failed to load profile picture: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
-//                .addOnFailureListener(e -> {
-//                    Toast.makeText(requireContext(), "Failed to load profile picture: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-//                });
     }
 
 

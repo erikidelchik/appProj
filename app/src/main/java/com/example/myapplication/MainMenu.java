@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBar;
@@ -16,6 +17,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 
 public class MainMenu extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -28,7 +30,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         auth = FirebaseAuth.getInstance();
 
@@ -39,12 +41,25 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
 
         // Access the header view
         View headerView = navigationView.getHeaderView(0); // Get the first header view
-
         TextView uname = headerView.findViewById(R.id.nameOfUser);
 
-        // Check if the user is not null and set the email
-        if (currentUser != null && currentUser.getEmail() != null) {
-            uname.setText(currentUser.getEmail());
+
+        // Check if the user is not null and set the username
+        if (currentUser != null) {
+            String userId = currentUser.getUid(); // Get the authenticated user's UID
+
+            // Get the user's document from Firestore
+            db.collection("users").document(userId)
+                    .get()
+                    .addOnSuccessListener(documentSnapshot -> {
+                        if (documentSnapshot.exists()) {
+                            // Retrieve the username from Firestore
+                            String username = documentSnapshot.getString("username");
+
+                            // Set the username to the TextView
+                            uname.setText(username);
+                        }
+                    });
         }
 
 
