@@ -1,8 +1,10 @@
 package com.example.myapplication;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -38,6 +40,8 @@ public class ProfileFragment extends Fragment {
 
     FloatingActionButton change_pic_button;
 
+    SharedPreferences prefs;
+
     private ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -67,14 +71,29 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //initialize firebase auth and current user
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
-        if (currentUser != null) {
+        //initialize views
+        profPic = view.findViewById(R.id.profilePic);
+        change_pic_button = view.findViewById(R.id.changeProfilePicButton);
+
+
+        //load profile image
+        prefs = requireContext().getSharedPreferences("profilePictures", Context.MODE_PRIVATE);
+        String profilePictureUrl = prefs.getString("profilePictureUrl", null);
+        if(profilePictureUrl!=null){
+            // Load the image from the cached URL
+            Glide.with(requireContext())
+                    .load(profilePictureUrl)
+                    .into(profPic);
+        }
+        else if (currentUser != null) {
+            // If not found in SharedPreferences, fetch from Firestore
             loadProfilePicture(currentUser.getUid());
         }
 
-        profPic = view.findViewById(R.id.profilePic);
-        change_pic_button = view.findViewById(R.id.changeProfilePicButton);
+
 
         change_pic_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -102,7 +121,6 @@ public class ProfileFragment extends Fragment {
             Toast.makeText(requireContext(), "No image selected", Toast.LENGTH_SHORT).show();
             return;
         }
-
 
         // Reference to Firebase Storage
         FirebaseStorage storage = FirebaseStorage.getInstance();
@@ -133,8 +151,17 @@ public class ProfileFragment extends Fragment {
 
         // Save the image URL in the user's document
         db.collection("users").document(userId)
-                .update("profilePicture", downloadUrl) // Update or create the profilePicture field
+                .update("profilePicture", downloadUrl)
                 .addOnSuccessListener(aVoid -> {
+                    // Update the cached URL
+                    prefs.edit().putString("profilePictureUrl", downloadUrl).apply();
+                    // Load the new profile picture
+                    Glide.with(requireContext())
+                            .load(downloadUrl)
+                            .into(profPic);
+
+                    ((MainMenu) requireActivity()).setProfilePictureInNavBar();
+
                     Toast.makeText(requireContext(), "Profile picture updated!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
@@ -151,10 +178,13 @@ public class ProfileFragment extends Fragment {
                     if (documentSnapshot.exists()) {
                         String profilePictureUrl = documentSnapshot.getString("profilePicture");
                         if (profilePictureUrl != null && !profilePictureUrl.isEmpty()) {
-                            // Load the image using Glide
+                            // Use Glide to load and cache the image
                             Glide.with(requireContext())
                                     .load(profilePictureUrl)
                                     .into(profPic);
+
+                            // Save the URL in SharedPreferences
+                            prefs.edit().putString("profilePictureUrl", profilePictureUrl).apply();
                         }
                     }
                 })

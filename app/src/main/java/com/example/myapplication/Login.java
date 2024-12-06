@@ -4,11 +4,14 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -26,10 +29,12 @@ public class Login extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseFirestore database;
+    RelativeLayout loadingOverlay;
 
     @Override
     public void onStart() {
         super.onStart();
+        loadingOverlay.setVisibility(View.VISIBLE);
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = auth.getCurrentUser();
         if(currentUser!=null){
@@ -37,6 +42,7 @@ public class Login extends AppCompatActivity {
             startActivity(intent);
             finish();
         }
+        loadingOverlay.setVisibility(View.GONE);
     }
 
     @Override
@@ -49,6 +55,7 @@ public class Login extends AppCompatActivity {
         loginButton = findViewById(R.id.login_button);
         registerText = findViewById(R.id.register_text);
         error_text = findViewById(R.id.error_text_view);
+        loadingOverlay = findViewById(R.id.loadingOverlay);
 
         auth = FirebaseAuth.getInstance();
         database = FirebaseFirestore.getInstance();
@@ -73,8 +80,7 @@ public class Login extends AppCompatActivity {
                     error_text.setText("Please fill in all fields");
                     return;
                 }
-
-                loginButton.setEnabled(false);
+                loadingOverlay.setVisibility(View.VISIBLE);
                 // Get the email associated with the username
                 database.collection("users")
                         .whereEqualTo("username", username_p)
@@ -82,7 +88,7 @@ public class Login extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                loginButton.setEnabled(true);
+                                loadingOverlay.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
                                     if (!task.getResult().isEmpty()) {
                                         // Username found
