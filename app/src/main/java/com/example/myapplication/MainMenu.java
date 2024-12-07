@@ -32,6 +32,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
     private FirebaseAuth auth;
 
     private View headerView;
+    private FirebaseUser currentUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,7 +42,7 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         auth = FirebaseAuth.getInstance();
-        FirebaseUser currentUser = auth.getCurrentUser();
+        currentUser = auth.getCurrentUser();
 
 
         NavigationView navigationView = findViewById(R.id.nav_view);
@@ -129,8 +130,9 @@ public class MainMenu extends AppCompatActivity implements NavigationView.OnNavi
     }
 
     public void setProfilePictureInNavBar() {
+        String userID = currentUser.getUid();
         SharedPreferences prefs = getSharedPreferences("profilePictures", Context.MODE_PRIVATE);
-        String profilePictureUrl = prefs.getString("profilePictureUrl", null);
+        String profilePictureUrl = prefs.getString(userID + "profilePictureUrl", null);
         ImageView profPic = headerView.findViewById(R.id.profilePicNavBar);
         if (profilePictureUrl != null) {
             Glide.with(this)

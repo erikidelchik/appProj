@@ -81,7 +81,7 @@ public class ProfileFragment extends Fragment {
 
         //load profile image
         prefs = requireContext().getSharedPreferences("profilePictures", Context.MODE_PRIVATE);
-        String profilePictureUrl = prefs.getString("profilePictureUrl", null);
+        String profilePictureUrl = prefs.getString(currentUser.getUid() + "profilePictureUrl", null);
         if(profilePictureUrl!=null){
             // Load the image from the cached URL
             Glide.with(requireContext())
@@ -154,7 +154,7 @@ public class ProfileFragment extends Fragment {
                 .update("profilePicture", downloadUrl)
                 .addOnSuccessListener(aVoid -> {
                     // Update the cached URL
-                    prefs.edit().putString("profilePictureUrl", downloadUrl).apply();
+                    prefs.edit().putString(currentUser.getUid() + "profilePictureUrl", downloadUrl).apply();
                     // Load the new profile picture
                     Glide.with(requireContext())
                             .load(downloadUrl)
@@ -184,7 +184,7 @@ public class ProfileFragment extends Fragment {
                                     .into(profPic);
 
                             // Save the URL in SharedPreferences
-                            prefs.edit().putString("profilePictureUrl", profilePictureUrl).apply();
+                            prefs.edit().putString(currentUser.getUid() + "profilePictureUrl", profilePictureUrl).apply();
                         }
                     }
                 })
