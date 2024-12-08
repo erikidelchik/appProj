@@ -4,14 +4,12 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -22,7 +20,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 
-public class Login extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private TextView username, password, registerText, error_text;
     private Button loginButton;
@@ -38,7 +36,7 @@ public class Login extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = auth.getCurrentUser();
         if(currentUser!=null){
-            Intent intent = new Intent(this, MainMenu.class);
+            Intent intent = new Intent(this, MainMenuActivity.class);
             startActivity(intent);
             finish();
         }
@@ -63,7 +61,7 @@ public class Login extends AppCompatActivity {
         registerText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Login.this,Register.class);
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
             }
         });
@@ -117,8 +115,8 @@ public class Login extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         // Login successful
                         error_text.setText("");
-                        Toast.makeText(Login.this, "Login successful", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(Login.this, MainMenu.class);
+                        Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                         startActivity(intent);
                         finish();
                     } else {

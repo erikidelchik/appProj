@@ -2,29 +2,21 @@ package com.example.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.window.OnBackInvokedDispatcher;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.recaptcha.internal.zzaq;
-import com.google.firebase.Firebase;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -32,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class Register extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
     private Button register_button;
     private TextView email, username, password, passwordConform;
@@ -71,7 +63,7 @@ public class Register extends AppCompatActivity {
                 String fieldsResult = checkIfAllFieldsValid(email_p, username_p, password_p, passwordConform_p);
 
                 if (!fieldsResult.equals("all valid")) {
-                    Toast.makeText(Register.this, fieldsResult, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, fieldsResult, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 register_button.setEnabled(false);
@@ -85,7 +77,7 @@ public class Register extends AppCompatActivity {
                                 register_button.setEnabled(true);
 
                                 if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
-                                    Toast.makeText(Register.this, "username already exist", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(RegisterActivity.this, "username already exist", Toast.LENGTH_SHORT).show();
                                 } else {
                                     registerUser(email_p, username_p, password_p);
                                 }
@@ -119,9 +111,9 @@ public class Register extends AppCompatActivity {
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void unused) {
-                                                Toast.makeText(Register.this, "Account created successfully!", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(RegisterActivity.this, "Account created successfully!", Toast.LENGTH_SHORT).show();
                                                 // Navigate to Login
-                                                Intent intent = new Intent(Register.this, Login.class);
+                                                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                                                 startActivity(intent);
                                                 finish();
 
@@ -129,12 +121,12 @@ public class Register extends AppCompatActivity {
                                         }).addOnFailureListener(new OnFailureListener() {
                                             @Override
                                             public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(Register.this, e.toString(), Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(RegisterActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                                             }
                                         });
                             }
                         } else {
-                            Toast.makeText(Register.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                            Toast.makeText(RegisterActivity.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
