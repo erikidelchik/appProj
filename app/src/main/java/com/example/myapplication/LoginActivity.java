@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,24 +20,27 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
 
-public class Login extends AppCompatActivity {
+public class LoginActivity extends AppCompatActivity {
 
     private TextView username, password, registerText, error_text;
     private Button loginButton;
 
     private FirebaseAuth auth;
     private FirebaseFirestore database;
+    RelativeLayout loadingOverlay;
 
     @Override
     public void onStart() {
         super.onStart();
+        loadingOverlay.setVisibility(View.VISIBLE);
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = auth.getCurrentUser();
         if(currentUser!=null){
-            Intent intent = new Intent(this, MainMenu.class);
+            Intent intent = new Intent(this, MainMenuActivity.class);
             startActivity(intent);
             finish();
         }
+        loadingOverlay.setVisibility(View.GONE);
     }
 
     @Override
@@ -49,6 +53,7 @@ public class Login extends AppCompatActivity {
         loginButton = findViewById(R.id.login_button);
         registerText = findViewById(R.id.register_text);
         error_text = findViewById(R.id.error_text_view);
+        loadingOverlay = findViewById(R.id.loadingOverlay);
 
         auth = FirebaseAuth.getInstance();
         database = FirebaseFirestore.getInstance();
@@ -56,7 +61,7 @@ public class Login extends AppCompatActivity {
         registerText.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Login.this,Register.class);
+                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
                 startActivity(intent);
             }
         });
@@ -73,8 +78,7 @@ public class Login extends AppCompatActivity {
                     error_text.setText("Please fill in all fields");
                     return;
                 }
-
-                loginButton.setEnabled(false);
+                loadingOverlay.setVisibility(View.VISIBLE);
                 // Get the email associated with the username
                 database.collection("users")
                         .whereEqualTo("username", username_p)
@@ -82,7 +86,7 @@ public class Login extends AppCompatActivity {
                         .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
                             @Override
                             public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                loginButton.setEnabled(true);
+                                loadingOverlay.setVisibility(View.GONE);
                                 if (task.isSuccessful()) {
                                     if (!task.getResult().isEmpty()) {
                                         // Username found
@@ -111,8 +115,8 @@ public class Login extends AppCompatActivity {
                     if (task.isSuccessful()) {
                         // Login successful
                         error_text.setText("");
-                        Toast.makeText(Login.this, "Login successful", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(Login.this, MainMenu.class);
+                        Toast.makeText(LoginActivity.this, "Login successful", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                         startActivity(intent);
                         finish();
                     } else {

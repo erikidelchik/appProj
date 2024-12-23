@@ -1,8 +1,10 @@
 package com.example.myapplication;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -12,11 +14,11 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -38,12 +40,17 @@ public class ProfileFragment extends Fragment {
 
     FloatingActionButton change_pic_button;
 
+    SharedPreferences prefs;
+    RelativeLayout loadingOverlay;
+
     private ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                     Uri uri = result.getData().getData();
                     if (uri != null) {
+                        //start loading screen
+                        //loadingOverlay.setVisibility(View.VISIBLE);
                         profPic.setImageURI(uri);
                         uploadImageToFirebase(uri);
                     }
@@ -67,14 +74,30 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        //initialize firebase auth and current user
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
-        if (currentUser != null) {
+        //initialize views
+        profPic = view.findViewById(R.id.profilePic);
+        change_pic_button = view.findViewById(R.id.changeProfilePicButton);
+        loadingOverlay = view.findViewById(R.id.loadingOverlay);
+
+
+        //load profile image
+        prefs = requireContext().getSharedPreferences("profilePictures", Context.MODE_PRIVATE);
+        String profilePictureUrl = prefs.getString(currentUser.getUid() + "profilePictureUrl", null);
+        if(profilePictureUrl!=null){
+            // Load the image from the cached URL
+            Glide.with(requireContext())
+                    .load(profilePictureUrl)
+                    .into(profPic);
+        }
+        else if (currentUser != null) {
+            // If not found in SharedPreferences, fetch from Firestore
             loadProfilePicture(currentUser.getUid());
         }
 
-        profPic = view.findViewById(R.id.profilePic);
-        change_pic_button = view.findViewById(R.id.changeProfilePicButton);
+
 
         change_pic_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -103,7 +126,6 @@ public class ProfileFragment extends Fragment {
             return;
         }
 
-
         // Reference to Firebase Storage
         FirebaseStorage storage = FirebaseStorage.getInstance();
         StorageReference storageRef = storage.getReference();
@@ -119,9 +141,13 @@ public class ProfileFragment extends Fragment {
                     imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                         String downloadUrl = uri.toString();
                         saveImageUrlToFirestore(userId, downloadUrl); // Save the URL to Firestore
+                    }).addOnFailureListener(e -> {
+                        //loadingOverlay.setVisibility(View.GONE);
+                        Toast.makeText(requireContext(), "Failed to get image URL: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
                 })
                 .addOnFailureListener(e -> {
+                    //loadingOverlay.setVisibility(View.GONE);
                     Toast.makeText(requireContext(), "Failed to upload image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
@@ -129,15 +155,29 @@ public class ProfileFragment extends Fragment {
     private void saveImageUrlToFirestore(String userId, String downloadUrl) {
         // Reference to Firestore
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        //start loading screen
 
 
         // Save the image URL in the user's document
         db.collection("users").document(userId)
-                .update("profilePicture", downloadUrl) // Update or create the profilePicture field
+                .update("profilePicture", downloadUrl)
                 .addOnSuccessListener(aVoid -> {
+                    // Update the cached URL
+                    prefs.edit().putString(currentUser.getUid() + "profilePictureUrl", downloadUrl).apply();
+                    // Load the new profile picture
+                    Glide.with(requireContext())
+                            .load(downloadUrl)
+                            .into(profPic);
+
+
+                    ((MainMenuActivity) requireActivity()).setProfilePictureInNavBar();
+
+                    //loadingOverlay.setVisibility(View.GONE);
+
                     Toast.makeText(requireContext(), "Profile picture updated!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
+                    //loadingOverlay.setVisibility(View.GONE);
                     Toast.makeText(requireContext(), "Failed to update Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
@@ -151,10 +191,13 @@ public class ProfileFragment extends Fragment {
                     if (documentSnapshot.exists()) {
                         String profilePictureUrl = documentSnapshot.getString("profilePicture");
                         if (profilePictureUrl != null && !profilePictureUrl.isEmpty()) {
-                            // Load the image using Glide
+                            // Use Glide to load and cache the image
                             Glide.with(requireContext())
                                     .load(profilePictureUrl)
                                     .into(profPic);
+
+                            // Save the URL in SharedPreferences
+                            prefs.edit().putString(currentUser.getUid() + "profilePictureUrl", profilePictureUrl).apply();
                         }
                     }
                 })
