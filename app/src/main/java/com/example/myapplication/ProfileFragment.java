@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -40,6 +41,7 @@ public class ProfileFragment extends Fragment {
     FloatingActionButton change_pic_button;
 
     SharedPreferences prefs;
+    RelativeLayout loadingOverlay;
 
     private ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -47,6 +49,8 @@ public class ProfileFragment extends Fragment {
                 if (result.getResultCode() == Activity.RESULT_OK && result.getData() != null) {
                     Uri uri = result.getData().getData();
                     if (uri != null) {
+                        //start loading screen
+                        //loadingOverlay.setVisibility(View.VISIBLE);
                         profPic.setImageURI(uri);
                         uploadImageToFirebase(uri);
                     }
@@ -76,6 +80,7 @@ public class ProfileFragment extends Fragment {
         //initialize views
         profPic = view.findViewById(R.id.profilePic);
         change_pic_button = view.findViewById(R.id.changeProfilePicButton);
+        loadingOverlay = view.findViewById(R.id.loadingOverlay);
 
 
         //load profile image
@@ -136,9 +141,13 @@ public class ProfileFragment extends Fragment {
                     imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                         String downloadUrl = uri.toString();
                         saveImageUrlToFirestore(userId, downloadUrl); // Save the URL to Firestore
+                    }).addOnFailureListener(e -> {
+                        //loadingOverlay.setVisibility(View.GONE);
+                        Toast.makeText(requireContext(), "Failed to get image URL: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
                 })
                 .addOnFailureListener(e -> {
+                    //loadingOverlay.setVisibility(View.GONE);
                     Toast.makeText(requireContext(), "Failed to upload image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
@@ -146,6 +155,7 @@ public class ProfileFragment extends Fragment {
     private void saveImageUrlToFirestore(String userId, String downloadUrl) {
         // Reference to Firestore
         FirebaseFirestore db = FirebaseFirestore.getInstance();
+        //start loading screen
 
 
         // Save the image URL in the user's document
@@ -159,11 +169,15 @@ public class ProfileFragment extends Fragment {
                             .load(downloadUrl)
                             .into(profPic);
 
+
                     ((MainMenuActivity) requireActivity()).setProfilePictureInNavBar();
+
+                    //loadingOverlay.setVisibility(View.GONE);
 
                     Toast.makeText(requireContext(), "Profile picture updated!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
+                    //loadingOverlay.setVisibility(View.GONE);
                     Toast.makeText(requireContext(), "Failed to update Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
