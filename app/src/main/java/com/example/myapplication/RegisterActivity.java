@@ -27,6 +27,7 @@ import java.util.Map;
 public class RegisterActivity extends AppCompatActivity {
 
     private Button register_button;
+
     private TextView email, username, password, passwordConform;
 
     private String email_p, username_p, password_p, passwordConform_p;
