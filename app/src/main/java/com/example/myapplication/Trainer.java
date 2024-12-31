@@ -1,30 +1,30 @@
 package com.example.myapplication;
 
-// data class for storing trainer information
 public class Trainer {
-    private String name;
-    private String profilePictureUrl;
-    private String userId;
+    private String username;
+    private String profilePicture;
+    private boolean isTrainer;
 
     public Trainer() {
         // Required empty constructor for Firestore
     }
 
-    public Trainer(String name, String profilePictureUrl, String userId) {
-        this.name = name;
-        this.profilePictureUrl = profilePictureUrl;
-        this.userId = userId;
+    public Trainer(String username, String profilePicture, boolean isTrainer) {
+        this.username = username;
+        this.profilePicture = profilePicture;
+        this.isTrainer = isTrainer;
     }
 
-    public String getName() {
-        return name;
+    public String getUsername() {
+        return username;
     }
 
-    public String getProfilePictureUrl() {
-        return profilePictureUrl;
+    public String getProfilePicture() {
+        return profilePicture;
     }
 
-    public String getUserId() {
-        return userId;
+    public boolean isTrainer() {
+        return isTrainer;
     }
 }
+

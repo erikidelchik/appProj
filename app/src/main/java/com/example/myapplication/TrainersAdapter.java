@@ -39,12 +39,23 @@ public class TrainersAdapter extends RecyclerView.Adapter<TrainersAdapter.Traine
     public void onBindViewHolder(@NonNull TrainerViewHolder holder, int position) {
         Trainer trainer = trainers.get(position);
 
-        holder.name.setText(trainer.getName());
-        Glide.with(context).load(trainer.getProfilePictureUrl()).into(holder.profilePic);
+        // Set username
+        holder.name.setText(trainer.getUsername() != null ? trainer.getUsername() : "Unknown Trainer");
 
+        // Load profile picture
+        if (trainer.getProfilePicture() != null && !trainer.getProfilePicture().isEmpty()) {
+            Glide.with(context)
+                    .load(trainer.getProfilePicture())
+                    .placeholder(R.drawable.blank_profile_picture) // Placeholder image
+                    .into(holder.profilePic);
+        } else {
+            holder.profilePic.setImageResource(R.drawable.blank_profile_picture);
+        }
+
+        // Message button click listener
         holder.messageButton.setOnClickListener(v -> {
 //            Intent intent = new Intent(context, MessageActivity.class);
-//            intent.putExtra("trainerId", trainer.getUserId());
+//            intent.putExtra("trainerUsername", trainer.getUsername());
 //            context.startActivity(intent);
         });
     }

@@ -2,6 +2,7 @@ package com.example.myapplication;
 
 import android.annotation.SuppressLint;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,13 +35,13 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         trainersRecyclerView = view.findViewById(R.id.trainersRecyclerView);
-        GridLayoutManager layoutManager = new GridLayoutManager(requireContext(), 2);
+        GridLayoutManager layoutManager = new GridLayoutManager(requireContext(), 1);
 
+        trainersAdapter = new TrainersAdapter(requireContext(), trainersList);
         trainersRecyclerView.setLayoutManager(layoutManager);
         trainersRecyclerView.setAdapter(trainersAdapter);
 
-        trainersAdapter = new TrainersAdapter(requireContext(), trainersList);
-        trainersRecyclerView.setAdapter(trainersAdapter);
+
 
         fetchTrainersFromFirestore();
     }
@@ -54,10 +55,15 @@ public class HomeFragment extends Fragment {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     trainersList.clear();
                     trainersList.addAll(queryDocumentSnapshots.toObjects(Trainer.class));
+                    // Log the fetched data
+                    for (Trainer trainer : trainersList) {
+                        Log.d("TrainerData", "Name: " + trainer.getUsername() + ", Picture: " + trainer.getProfilePicture());
+                    }
+
                     trainersAdapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
-                    // Handle error
+                    Log.e("FirestoreError", "Failed to fetch trainers: " + e.getMessage());
                 });
     }
 }

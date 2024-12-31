@@ -41,5 +41,7 @@
                 android:backgroundTint="@color/blueLight"/>
 
         </LinearLayout>
+
     </LinearLayout>
+
 </LinearLayout>
