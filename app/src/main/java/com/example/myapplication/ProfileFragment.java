@@ -50,7 +50,7 @@ public class ProfileFragment extends Fragment {
                     Uri uri = result.getData().getData();
                     if (uri != null) {
                         //start loading screen
-                        //loadingOverlay.setVisibility(View.VISIBLE);
+                        loadingOverlay.setVisibility(View.VISIBLE);
                         profPic.setImageURI(uri);
                         uploadImageToFirebase(uri);
                     }
@@ -77,10 +77,11 @@ public class ProfileFragment extends Fragment {
         //initialize firebase auth and current user
         auth = FirebaseAuth.getInstance();
         currentUser = auth.getCurrentUser();
+
         //initialize views
         profPic = view.findViewById(R.id.profilePic);
         change_pic_button = view.findViewById(R.id.changeProfilePicButton);
-        loadingOverlay = view.findViewById(R.id.loadingOverlay);
+        loadingOverlay = requireActivity().findViewById(R.id.loadingOverlay);
 
 
         //load profile image
@@ -142,12 +143,12 @@ public class ProfileFragment extends Fragment {
                         String downloadUrl = uri.toString();
                         saveImageUrlToFirestore(userId, downloadUrl); // Save the URL to Firestore
                     }).addOnFailureListener(e -> {
-                        //loadingOverlay.setVisibility(View.GONE);
+                        loadingOverlay.setVisibility(View.GONE);
                         Toast.makeText(requireContext(), "Failed to get image URL: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     });
                 })
                 .addOnFailureListener(e -> {
-                    //loadingOverlay.setVisibility(View.GONE);
+                    loadingOverlay.setVisibility(View.GONE);
                     Toast.makeText(requireContext(), "Failed to upload image: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
@@ -172,12 +173,12 @@ public class ProfileFragment extends Fragment {
 
                     ((MainMenuActivity) requireActivity()).setProfilePictureInNavBar();
 
-                    //loadingOverlay.setVisibility(View.GONE);
+                    loadingOverlay.setVisibility(View.GONE);
 
                     Toast.makeText(requireContext(), "Profile picture updated!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
-                    //loadingOverlay.setVisibility(View.GONE);
+                    loadingOverlay.setVisibility(View.GONE);
                     Toast.makeText(requireContext(), "Failed to update Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }

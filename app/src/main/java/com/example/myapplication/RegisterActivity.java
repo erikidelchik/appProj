@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -34,6 +35,8 @@ public class RegisterActivity extends AppCompatActivity {
     FirebaseAuth auth;
     FirebaseFirestore database;
 
+    private CheckBox checkboxTrainer;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +51,8 @@ public class RegisterActivity extends AppCompatActivity {
         username = findViewById(R.id.input_username);
         password = findViewById(R.id.input_pass);
         passwordConform = findViewById(R.id.input_passConfrm);
+
+        checkboxTrainer = findViewById(R.id.checkBoxTrainer);
 
 
         register_button.setOnClickListener(new View.OnClickListener() {
@@ -79,7 +84,8 @@ public class RegisterActivity extends AppCompatActivity {
                                 if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
                                     Toast.makeText(RegisterActivity.this, "username already exist", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    registerUser(email_p, username_p, password_p);
+                                    boolean isTrainer = checkboxTrainer.isChecked();
+                                    registerUser(email_p, username_p, password_p, isTrainer);
                                 }
                             }
                         });
@@ -89,7 +95,7 @@ public class RegisterActivity extends AppCompatActivity {
 
     }
 
-    private void registerUser(String email, String username, String password) {
+    private void registerUser(String email, String username, String password, boolean isTrainer) {
 
         //firebase func to register new user
         auth.createUserWithEmailAndPassword(email, password)
@@ -105,6 +111,7 @@ public class RegisterActivity extends AppCompatActivity {
                                 Map<String, Object> userData = new HashMap<>();
                                 userData.put("username", username);
                                 userData.put("email", email);
+                                userData.put("isTrainer", isTrainer);
 
                                 database.collection("users").document(userId)
                                         .set(userData)

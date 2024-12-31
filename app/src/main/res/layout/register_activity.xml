@@ -8,11 +8,12 @@
     android:background="@drawable/background"
     tools:context=".RegisterActivity">
 
+
     <Button
         android:id="@+id/register_button"
         android:layout_width="0dp"
         android:layout_height="59dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="176dp"
         android:background="@drawable/btn_bg"
         android:shadowColor="@color/white"
         android:text="Register"
@@ -23,6 +24,7 @@
         android:textCursorDrawable="@drawable/btn_bg"
         android:textSize="20dp"
         app:layout_constraintEnd_toEndOf="@+id/input_passConfrm"
+        app:layout_constraintHorizontal_bias="0.111"
         app:layout_constraintStart_toStartOf="@+id/input_passConfrm"
         app:layout_constraintTop_toBottomOf="@+id/input_passConfrm"
         app:rippleColor="@color/white"
@@ -52,7 +54,7 @@
         android:id="@+id/input_username"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/input_bg"
         android:drawableLeft="@drawable/ic_person"
         android:ems="10"
@@ -88,7 +90,7 @@
         android:id="@+id/input_passConfrm"
         android:layout_width="0dp"
         android:layout_height="56dp"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="16dp"
         android:background="@drawable/input_bg"
         android:drawableLeft="@drawable/ic_pass"
         android:ems="10"
@@ -112,9 +114,27 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.521"
+        app:layout_constraintHorizontal_bias="0.501"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.07999998" />
+        app:layout_constraintVertical_bias="0.097" />
+
+    <CheckBox
+        android:id="@+id/checkBoxTrainer"
+        android:layout_width="167dp"
+        android:layout_height="50dp"
+        android:layout_marginTop="40dp"
+        android:background="@drawable/btn_bg"
+        android:backgroundTintMode="add"
+        android:drawingCacheQuality="auto"
+        android:ellipsize="none"
+        android:text="im a trainer"
+        android:textSize="20sp"
+        app:checkedState="unchecked"
+        app:layout_constraintEnd_toEndOf="@+id/input_passConfrm"
+        app:layout_constraintHorizontal_bias="0.48"
+        app:layout_constraintStart_toStartOf="@+id/input_passConfrm"
+        app:layout_constraintTop_toBottomOf="@+id/input_passConfrm" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

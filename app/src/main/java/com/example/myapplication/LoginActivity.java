@@ -97,7 +97,7 @@ public class LoginActivity extends AppCompatActivity {
                                         authenticateUser(email, password_p);
                                     } else {
                                         // Username not found
-                                        error_text.setText("Username not found");
+                                        error_text.setText("wrong username or password");
                                     }
                                 }
                                 else {

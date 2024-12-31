@@ -89,9 +89,13 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
                         if (documentSnapshot.exists()) {
                             // Retrieve the username from Firestore
                             String username = documentSnapshot.getString("username");
+                            boolean isTrainer = Boolean.TRUE.equals(documentSnapshot.getBoolean("isTrainer"));
 
                             // Set the username to the TextView
-                            uname.setText(username);
+                            if(isTrainer)
+                                uname.setText(username + " (Trainer)");
+                            else
+                                uname.setText(username + " (Training)");
                         }
                         else{
                             Log.d("DEBUG", "Document does not exist for UID: " + userId);
