@@ -42,7 +42,6 @@ public class HomeFragment extends Fragment {
         trainersRecyclerView.setAdapter(trainersAdapter);
 
 
-
         fetchTrainersFromFirestore();
     }
 
@@ -55,15 +54,10 @@ public class HomeFragment extends Fragment {
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     trainersList.clear();
                     trainersList.addAll(queryDocumentSnapshots.toObjects(Trainer.class));
-                    // Log the fetched data
-                    for (Trainer trainer : trainersList) {
-                        Log.d("TrainerData", "Name: " + trainer.getUsername() + ", Picture: " + trainer.getProfilePicture());
-                    }
-
                     trainersAdapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
-                    Log.e("FirestoreError", "Failed to fetch trainers: " + e.getMessage());
+//                    Log.e("FirestoreError", "Failed to fetch trainers: " + e.getMessage());
                 });
     }
 }

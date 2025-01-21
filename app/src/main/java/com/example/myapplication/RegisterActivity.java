@@ -132,7 +132,9 @@ public class RegisterActivity extends AppCompatActivity {
                                             }
                                         });
                             }
-                        } else {
+                        }
+
+                        else {
                             Toast.makeText(RegisterActivity.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }

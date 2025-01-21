@@ -46,7 +46,12 @@ dependencies {
     implementation(libs.firebase.auth)
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
+    implementation(libs.junit.junit)
     testImplementation(libs.junit)
+    testImplementation(libs.mockito)
+    testImplementation(libs.robolectric)
+    testImplementation(libs.powermockapi)
+    testImplementation(libs.powermockmodule)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
 }

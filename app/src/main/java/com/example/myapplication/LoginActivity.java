@@ -21,11 +21,14 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 
 public class LoginActivity extends AppCompatActivity {
-
-    private TextView username, password, registerText, error_text;
+    private AuthRepository authRepository; //for testing mock
+    private TextView username;
+    private TextView password;
+    private TextView registerText;
+    TextView error_text;
     private Button loginButton;
 
-    private FirebaseAuth auth;
+//    FirebaseAuth auth;
     private FirebaseFirestore database;
     RelativeLayout loadingOverlay;
 
@@ -34,7 +37,7 @@ public class LoginActivity extends AppCompatActivity {
         super.onStart();
         loadingOverlay.setVisibility(View.VISIBLE);
         // Check if user is signed in (non-null) and update UI accordingly.
-        FirebaseUser currentUser = auth.getCurrentUser();
+        FirebaseUser currentUser = authRepository.getFirebaseAuth().getCurrentUser();
         if(currentUser!=null){
             Intent intent = new Intent(this, MainMenuActivity.class);
             startActivity(intent);
@@ -55,7 +58,10 @@ public class LoginActivity extends AppCompatActivity {
         error_text = findViewById(R.id.error_text_view);
         loadingOverlay = findViewById(R.id.loadingOverlay);
 
-        auth = FirebaseAuth.getInstance();
+        authRepository = new AuthRepository(FirebaseAuth.getInstance());
+
+//        auth = FirebaseAuth.getInstance();
+
         database = FirebaseFirestore.getInstance();
 
         registerText.setOnClickListener(new View.OnClickListener() {
@@ -78,6 +84,7 @@ public class LoginActivity extends AppCompatActivity {
                     error_text.setText("Please fill in all fields");
                     return;
                 }
+
                 loadingOverlay.setVisibility(View.VISIBLE);
                 // Get the email associated with the username
                 database.collection("users")
@@ -109,8 +116,8 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    private void authenticateUser(String email, String password) {
-        auth.signInWithEmailAndPassword(email, password)
+    void authenticateUser(String email, String password) {
+        authRepository.authenticateUser(email,password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         // Login successful
@@ -119,7 +126,9 @@ public class LoginActivity extends AppCompatActivity {
                         Intent intent = new Intent(LoginActivity.this, MainMenuActivity.class);
                         startActivity(intent);
                         finish();
-                    } else {
+                    }
+
+                    else {
                         // Login failed
                         error_text.setText("wrong username or password");
                     }

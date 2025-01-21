@@ -58,6 +58,21 @@ public class TrainersAdapter extends RecyclerView.Adapter<TrainersAdapter.Traine
 //            intent.putExtra("trainerUsername", trainer.getUsername());
 //            context.startActivity(intent);
         });
+
+
+//        holder.profilePic.setOnClickListener(v -> {
+//            String trainerId = trainer.getUserId();
+//            TrainerProfileFragment trainerProfileFragment = TrainerProfileFragment.newInstance(trainerId);
+//            if (context instanceof AppCompatActivity) {
+//                AppCompatActivity activity = (AppCompatActivity) context;
+//                activity.getSupportFragmentManager()
+//                        .beginTransaction()
+//                        .replace(R.id.fragment_container, trainerProfileFragment)
+//                        .addToBackStack(null)
+//                        .commit();
+//            }
+//        });
+
     }
 
     @Override
