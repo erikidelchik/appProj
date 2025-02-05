@@ -17,8 +17,11 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
@@ -42,6 +45,10 @@ public class ProfileFragment extends Fragment {
 
     SharedPreferences prefs;
     RelativeLayout loadingOverlay;
+
+    EditText full_name_field;
+    Button save_button;
+    TextView name_text;
 
     private ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -82,10 +89,30 @@ public class ProfileFragment extends Fragment {
         profPic = view.findViewById(R.id.profilePic);
         change_pic_button = view.findViewById(R.id.changeProfilePicButton);
         loadingOverlay = requireActivity().findViewById(R.id.loadingOverlay);
+        save_button = view.findViewById(R.id.saveButton);
+        full_name_field = view.findViewById(R.id.full_name);
+        name_text = view.findViewById(R.id.nameTextView);
 
+        prefs = requireContext().getSharedPreferences("profilePictures", Context.MODE_PRIVATE);
+
+        //set user's name
+        String name = prefs.getString(currentUser.getUid() + "fullname",null);
+        if(name!=null){
+            name_text.setText(name);
+        }
+        
+        save_button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String newName = full_name_field.getText().toString();
+                name_text.setText(newName);
+                prefs.edit().putString(currentUser.getUid() + "fullname",newName).apply();
+
+            }
+        });
 
         //load profile image
-        prefs = requireContext().getSharedPreferences("profilePictures", Context.MODE_PRIVATE);
+
         String profilePictureUrl = prefs.getString(currentUser.getUid() + "profilePictureUrl", null);
         if(profilePictureUrl!=null){
             // Load the image from the cached URL

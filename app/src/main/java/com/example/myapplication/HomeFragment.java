@@ -13,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
@@ -51,13 +52,21 @@ public class HomeFragment extends Fragment {
         db.collection("users")
                 .whereEqualTo("isTrainer", true)
                 .get()
-                .addOnSuccessListener(queryDocumentSnapshots -> {
+                .addOnSuccessListener(querySnapshot -> {
                     trainersList.clear();
-                    trainersList.addAll(queryDocumentSnapshots.toObjects(Trainer.class));
+
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()) {
+                        // Convert to a Trainer object
+                        Trainer trainer = doc.toObject(Trainer.class);
+                        if (trainer != null) {
+                            trainer.setUserId(doc.getId());
+                            trainersList.add(trainer);
+                        }
+                    }
                     trainersAdapter.notifyDataSetChanged();
                 })
                 .addOnFailureListener(e -> {
-//                    Log.e("FirestoreError", "Failed to fetch trainers: " + e.getMessage());
+                    // handle error
                 });
     }
 }

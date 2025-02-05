@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -48,9 +49,11 @@ public class TrainersAdapter extends RecyclerView.Adapter<TrainersAdapter.Traine
                     .load(trainer.getProfilePicture())
                     .placeholder(R.drawable.blank_profile_picture) // Placeholder image
                     .into(holder.profilePic);
-        } else {
+        }
+        else {
             holder.profilePic.setImageResource(R.drawable.blank_profile_picture);
         }
+
 
         // Message button click listener
         holder.messageButton.setOnClickListener(v -> {
@@ -59,19 +62,29 @@ public class TrainersAdapter extends RecyclerView.Adapter<TrainersAdapter.Traine
 //            context.startActivity(intent);
         });
 
+        holder.profilePic.setOnClickListener(v -> {
+            String trainerDocId   = trainer.getUserId();        // if you’re storing doc/UID
+            String trainerName    = trainer.getUsername();
+            String trainerPicUrl  = trainer.getProfilePicture();
 
-//        holder.profilePic.setOnClickListener(v -> {
-//            String trainerId = trainer.getUserId();
-//            TrainerProfileFragment trainerProfileFragment = TrainerProfileFragment.newInstance(trainerId);
-//            if (context instanceof AppCompatActivity) {
-//                AppCompatActivity activity = (AppCompatActivity) context;
-//                activity.getSupportFragmentManager()
-//                        .beginTransaction()
-//                        .replace(R.id.fragment_container, trainerProfileFragment)
-//                        .addToBackStack(null)
-//                        .commit();
-//            }
-//        });
+            // Pass everything to the fragment
+            TrainerProfileFragment fragment = TrainerProfileFragment.newInstance(
+                    trainerDocId,
+                    trainerName,
+                    trainerPicUrl
+            );
+
+            // Do the usual fragment transaction
+            if (context instanceof AppCompatActivity) {
+                AppCompatActivity activity = (AppCompatActivity) context;
+                activity.getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, fragment)
+                        .addToBackStack(null)
+                        .commit();
+            }
+        });
+
 
     }
 
