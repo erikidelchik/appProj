@@ -1,4 +1,6 @@
 package com.example.myapplication;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.verify;
@@ -53,13 +55,9 @@ public class AuthenticateUserTest {
 
         // 3) Call the repository method
         Task<AuthResult> resultTask = authRepository.authenticateUser("some@test.com", "password123");
+        resultTask.addOnCompleteListener(
+                task -> assertTrue(task.isSuccessful()));
 
-        // 4) Because we are returning a Task, let's attach our own OnCompleteListener
-        resultTask.addOnCompleteListener(task -> {
-            // Here we can assert that task.isSuccessful() is true
-            assert (task.isSuccessful());
-            // Optionally do more checks, e.g., if we expect a certain user, etc.
-        });
     }
 
     @Test
@@ -77,8 +75,7 @@ public class AuthenticateUserTest {
 
         Task<AuthResult> resultTask = authRepository.authenticateUser("wrong@test.com", "wrongpassword");
 
-        resultTask.addOnCompleteListener(task -> {
-            assert (!task.isSuccessful());
-        });
+
+        assertFalse(resultTask.isSuccessful());
     }
 }

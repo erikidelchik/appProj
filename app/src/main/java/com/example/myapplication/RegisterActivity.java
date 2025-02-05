@@ -27,6 +27,7 @@ import java.util.Map;
 
 public class RegisterActivity extends AppCompatActivity {
 
+    private RegisterValidator validator = new RegisterValidator();
     private Button register_button;
     private TextView email, username, password, passwordConform;
 
@@ -65,7 +66,7 @@ public class RegisterActivity extends AppCompatActivity {
                 passwordConform_p = passwordConform.getText().toString();
 
                 //if all fields are valid
-                String fieldsResult = checkIfAllFieldsValid(email_p, username_p, password_p, passwordConform_p);
+                String fieldsResult = validator.checkIfAllFieldsValid(email_p,username_p,password_p,passwordConform_p);
 
                 if (!fieldsResult.equals("all valid")) {
                     Toast.makeText(RegisterActivity.this, fieldsResult, Toast.LENGTH_SHORT).show();
@@ -141,17 +142,5 @@ public class RegisterActivity extends AppCompatActivity {
                 });
     }
 
-    public String checkIfAllFieldsValid(String email, String username, String password, String confPass) {
-        if (!email.isEmpty() && !username.isEmpty() && !password.isEmpty() && !confPass.isEmpty()) {
-            if (password.equals(confPass)) {
-                return "all valid";
-            } else {
-                return "passwords are not matching";
-            }
-        } else {
-            return "all fields must be filled";
-        }
-
-    }
 
 }
