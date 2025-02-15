@@ -44,13 +44,13 @@
             android:id="@+id/saveButton"
             android:layout_width="133dp"
             android:layout_height="54dp"
-            android:layout_marginTop="204dp"
+            android:layout_marginTop="64dp"
             android:backgroundTint="@color/blueLight"
             android:text="save"
             android:textColor="@color/black"
             android:textSize="23dp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintHorizontal_bias="0.501"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view" />
 
@@ -114,7 +114,7 @@
             android:id="@+id/textViewAddPostLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="24dp"
+            android:layout_marginTop="80dp"
             android:text="Add a New Post:"
             android:textSize="18sp"
             app:layout_constraintStart_toStartOf="@+id/textView11"
@@ -122,9 +122,9 @@
 
         <EditText
             android:id="@+id/postContentEditText"
-            android:layout_width="387dp"
-            android:layout_height="66dp"
-            android:layout_marginTop="148dp"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="32dp"
             android:hint="Write something..."
             android:padding="8dp"
             app:layout_constraintEnd_toEndOf="@+id/textView11"
@@ -132,27 +132,28 @@
             app:layout_constraintStart_toStartOf="@+id/textView11"
             app:layout_constraintTop_toBottomOf="@+id/textViewAddPostLabel" />
 
-        <!-- Optional: RecyclerView to display the trainer’s posts -->
         <Button
             android:id="@+id/addPostButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="336dp"
+            android:layout_marginTop="12dp"
             android:backgroundTint="@color/blueLight"
             android:text="Add Post"
-            android:textColor="@color/black"
             android:textSize="18sp"
+
             app:layout_constraintEnd_toEndOf="@+id/postContentEditText"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="@+id/postContentEditText"
             app:layout_constraintTop_toBottomOf="@+id/postContentEditText" />
 
+        <!-- Optional: RecyclerView to display the trainer’s posts -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/trainerPostsRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
+            android:layout_marginTop="32dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/addPostButton" />
 
