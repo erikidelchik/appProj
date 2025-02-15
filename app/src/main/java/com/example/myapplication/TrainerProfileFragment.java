@@ -33,6 +33,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -116,7 +117,7 @@ public class TrainerProfileFragment extends Fragment {
         trainerPostsRecyclerView = view.findViewById(R.id.trainerPostsRecyclerView);
 
         // Create adapter and set to RecyclerView
-        postAdapter = new PostAdapter(postList);
+        postAdapter = new PostAdapter(postList,currentUser.getUid());
         trainerPostsRecyclerView.setAdapter(postAdapter);
 
         // Optionally set a LayoutManager
@@ -287,7 +288,7 @@ public class TrainerProfileFragment extends Fragment {
         db.collection("users")
                 .document(trainerId)
                 .collection("posts")
-                .orderBy("timestamp") // optional, if you have a timestamp field
+                .orderBy("timestamp", Query.Direction.DESCENDING) // optional, if you have a timestamp field
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
                         Toast.makeText(requireContext(),
@@ -301,6 +302,7 @@ public class TrainerProfileFragment extends Fragment {
                         for (DocumentSnapshot doc : value.getDocuments()) {
                             PostModel post = doc.toObject(PostModel.class);
                             if (post != null) {
+                                post.setDocId(doc.getId());
                                 updatedPostList.add(post);
                             }
                         }
@@ -317,6 +319,7 @@ public class TrainerProfileFragment extends Fragment {
         private String trainerId;
         private String content;
         private long timestamp;
+        private String docId;
 
         // Empty constructor needed for Firestore’s automatic data mapping
         public PostModel() {}
@@ -336,5 +339,8 @@ public class TrainerProfileFragment extends Fragment {
 
         public long getTimestamp() { return timestamp; }
         public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
+
+        public String getDocId() { return docId; }
+        public void setDocId(String docId) { this.docId = docId; }
     }
 }
