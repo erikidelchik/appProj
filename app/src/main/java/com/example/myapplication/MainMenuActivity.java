@@ -128,7 +128,7 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
         }
 
         else if(item.getItemId()==R.id.nav_profile && isTrainer){
-            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new TrainerProfileFragment()).commit();
         }
 
         else if(item.getItemId()==R.id.nav_home){

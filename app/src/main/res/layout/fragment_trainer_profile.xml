@@ -1,33 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true">
 
-
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        tools:context=".ProfileFragment">
+        tools:context=".TrainerProfileFragment">
 
-
-        <TextView
-            android:id="@+id/trainer_name"
-            android:layout_width="match_parent"
-            android:layout_height="30dp"
-            android:layout_marginLeft="24dp"
-            android:layout_marginTop="28dp"
-            android:layout_marginRight="24dp"
-            android:text=""
-            android:textAlignment="center"
-            android:textSize="18sp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profilePic" />
+        <!-- Copy of existing profile UI -->
 
         <com.google.android.material.imageview.ShapeableImageView
             android:id="@+id/profilePic"
@@ -41,22 +26,135 @@
             app:layout_constraintTop_toTopOf="parent"
             app:shapeAppearanceOverlay="@style/roundedImgView" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/changeProfilePicButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/white"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/ic_camera"
+            app:layout_constraintBottom_toBottomOf="@+id/profilePic"
+            app:layout_constraintEnd_toEndOf="@+id/profilePic"
+            app:shapeAppearanceOverlay="@style/roundedImgView" />
+
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="133dp"
+            android:layout_height="54dp"
+            android:layout_marginTop="204dp"
+            android:backgroundTint="@color/blueLight"
+            android:text="save"
+            android:textColor="@color/black"
+            android:textSize="23dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.5"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/view" />
 
         <TextView
-            android:id="@+id/text_view_posts"
+            android:id="@+id/nameTextView"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_marginLeft="24dp"
-            android:layout_marginTop="76dp"
+            android:layout_marginTop="28dp"
             android:layout_marginRight="24dp"
-            android:text="posts:"
+            android:text=""
             android:textAlignment="center"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profilePic" />
 
+        <TextView
+            android:id="@+id/textView11"
+            android:layout_width="match_parent"
+            android:layout_height="30dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="104dp"
+            android:layout_marginRight="24dp"
+            android:paddingLeft="20dp"
+            android:text="Name:"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePic" />
+
+        <EditText
+            android:id="@+id/full_name"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:layout_marginLeft="50dp"
+            android:layout_marginTop="4dp"
+            android:layout_marginRight="50dp"
+            android:hint="full name"
+            app:layout_constraintEnd_toEndOf="@+id/textView11"
+            app:layout_constraintStart_toStartOf="@+id/textView11"
+            app:layout_constraintTop_toBottomOf="@+id/textView11" />
+
+        <View
+            android:id="@+id/view"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginLeft="24dp"
+            android:layout_marginTop="76dp"
+            android:layout_marginRight="24dp"
+            android:background="@android:color/darker_gray"
+            app:layout_constraintEnd_toEndOf="@+id/textView11"
+            app:layout_constraintStart_toStartOf="@+id/textView11"
+            app:layout_constraintTop_toBottomOf="@+id/textView11" />
+
+        <!-- *************************** -->
+        <!-- TRAINER-SPECIFIC ADD POST UI -->
+        <!-- *************************** -->
+
+        <TextView
+            android:id="@+id/textViewAddPostLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:text="Add a New Post:"
+            android:textSize="18sp"
+            app:layout_constraintStart_toStartOf="@+id/textView11"
+            app:layout_constraintTop_toBottomOf="@+id/saveButton" />
+
+        <EditText
+            android:id="@+id/postContentEditText"
+            android:layout_width="387dp"
+            android:layout_height="66dp"
+            android:layout_marginTop="148dp"
+            android:hint="Write something..."
+            android:padding="8dp"
+            app:layout_constraintEnd_toEndOf="@+id/textView11"
+            app:layout_constraintHorizontal_bias="1.0"
+            app:layout_constraintStart_toStartOf="@+id/textView11"
+            app:layout_constraintTop_toBottomOf="@+id/textViewAddPostLabel" />
+
+        <!-- Optional: RecyclerView to display the trainer’s posts -->
+        <Button
+            android:id="@+id/addPostButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="336dp"
+            android:backgroundTint="@color/blueLight"
+            android:text="Add Post"
+            android:textColor="@color/black"
+            android:textSize="18sp"
+            app:layout_constraintEnd_toEndOf="@+id/postContentEditText"
+            app:layout_constraintHorizontal_bias="0.0"
+            app:layout_constraintStart_toStartOf="@+id/postContentEditText"
+            app:layout_constraintTop_toBottomOf="@+id/postContentEditText" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/trainerPostsRecyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/addPostButton" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
-
 </ScrollView>
