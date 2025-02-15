@@ -31,6 +31,8 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
 
     private View headerView;
     private FirebaseUser currentUser;
+    private boolean isTrainer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +51,8 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
         headerView = navigationView.getHeaderView(0); // Get the first header view
         TextView uname = headerView.findViewById(R.id.nameOfUser);
 
+        //assign isTrainer to true or false
+        getTrainerStatus();
 
         // Check if the user is not null and set the username
         setUsernameInNavBar(db,currentUser,uname);
@@ -71,9 +75,22 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
             navigationView.setCheckedItem(R.id.nav_home);
         }
 
+
         //update profile pic
         setProfilePictureInNavBar();
 
+    }
+
+    //assign isTrainer to true or false
+    private void getTrainerStatus(){
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users").document(currentUser.getUid())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if(documentSnapshot.exists()){
+                        isTrainer = Boolean.TRUE.equals(documentSnapshot.getBoolean("isTrainer"));
+                    }
+                });
     }
 
     public void setUsernameInNavBar(FirebaseFirestore db,FirebaseUser currentUser,TextView uname){
@@ -89,7 +106,6 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
                         if (documentSnapshot.exists()) {
                             // Retrieve the username from Firestore
                             String username = documentSnapshot.getString("username");
-                            boolean isTrainer = Boolean.TRUE.equals(documentSnapshot.getBoolean("isTrainer"));
 
                             // Set the username to the TextView
                             if(isTrainer)
@@ -107,9 +123,14 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
 
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        if(item.getItemId()==R.id.nav_profile){
+        if(item.getItemId()==R.id.nav_profile && !isTrainer){
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
         }
+
+        else if(item.getItemId()==R.id.nav_profile && isTrainer){
+            getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new ProfileFragment()).commit();
+        }
+
         else if(item.getItemId()==R.id.nav_home){
             getSupportFragmentManager().beginTransaction().replace(R.id.fragment_container, new HomeFragment()).commit();
         }

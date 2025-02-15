@@ -26,9 +26,11 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.github.dhaval2404.imagepicker.ImagePicker;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
@@ -49,6 +51,7 @@ public class ProfileFragment extends Fragment {
     EditText full_name_field;
     Button save_button;
     TextView name_text;
+
 
     private ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -105,14 +108,19 @@ public class ProfileFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 String newName = full_name_field.getText().toString();
-                name_text.setText(newName);
-                prefs.edit().putString(currentUser.getUid() + "fullname",newName).apply();
-
+                //check if field is empty
+                if(!newName.isEmpty()) {
+                    name_text.setText(newName);
+                    prefs.edit().putString(currentUser.getUid() + "fullname", newName).apply();
+                }
+                else{
+                    Toast.makeText(requireContext(),"cant save an empty text",Toast.LENGTH_SHORT).show();
+                }
             }
         });
 
-        //load profile image
 
+        //load profile image
         String profilePictureUrl = prefs.getString(currentUser.getUid() + "profilePictureUrl", null);
         if(profilePictureUrl!=null){
             // Load the image from the cached URL
@@ -147,6 +155,7 @@ public class ProfileFragment extends Fragment {
         });
 
     }
+
 
     private void uploadImageToFirebase(Uri imageUri) {
         if (imageUri == null) {

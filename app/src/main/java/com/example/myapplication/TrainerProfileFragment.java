@@ -60,14 +60,13 @@ public class TrainerProfileFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // 1. Find UI elements
+
         profilePic = view.findViewById(R.id.profilePic);
         trainerNameView = view.findViewById(R.id.trainer_name);
-
-        // 2. Use the data we already have (no extra Firestore call needed!)
+        
         trainerNameView.setText(username);
 
-        // 3. Load the profile pic via Glide or any image library
+        // Load the profile pic via Glide
         Glide.with(requireContext())
                 .load(profilePictureUrl)
                 .placeholder(R.drawable.blank_profile_picture)

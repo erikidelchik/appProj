@@ -62,10 +62,11 @@ public class TrainersAdapter extends RecyclerView.Adapter<TrainersAdapter.Traine
 //            context.startActivity(intent);
         });
 
+        // navigate to trainer's profile
         holder.profilePic.setOnClickListener(v -> {
-            String trainerDocId   = trainer.getUserId();        // if you’re storing doc/UID
-            String trainerName    = trainer.getUsername();
-            String trainerPicUrl  = trainer.getProfilePicture();
+            String trainerDocId = trainer.getUserId();
+            String trainerName = trainer.getUsername();
+            String trainerPicUrl = trainer.getProfilePicture();
 
             // Pass everything to the fragment
             TrainerProfileFragment fragment = TrainerProfileFragment.newInstance(
