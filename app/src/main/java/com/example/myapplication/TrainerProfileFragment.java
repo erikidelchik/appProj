@@ -12,6 +12,8 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -34,6 +36,9 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class TrainerProfileFragment extends Fragment {
 
     ImageView profPic;
@@ -51,6 +56,10 @@ public class TrainerProfileFragment extends Fragment {
     // For adding posts
     EditText postContentEditText;
     Button addPostButton;
+
+    private RecyclerView trainerPostsRecyclerView;
+    private PostAdapter postAdapter;
+    private List<PostModel> postList = new ArrayList<>();
 
     private ActivityResultLauncher<Intent> imagePickerLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
@@ -102,6 +111,19 @@ public class TrainerProfileFragment extends Fragment {
                 name_text.setText(name);
             }
         }
+
+        // Initialize RecyclerView
+        trainerPostsRecyclerView = view.findViewById(R.id.trainerPostsRecyclerView);
+
+        // Create adapter and set to RecyclerView
+        postAdapter = new PostAdapter(postList);
+        trainerPostsRecyclerView.setAdapter(postAdapter);
+
+        // Optionally set a LayoutManager
+        trainerPostsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
+
+        // Now load the posts (or listen for them)
+        loadPosts();
 
         // Save button logic
         save_button.setOnClickListener(v -> {
@@ -252,6 +274,39 @@ public class TrainerProfileFragment extends Fragment {
                 .addOnFailureListener(e -> {
                     loadingOverlay.setVisibility(View.GONE);
                     Toast.makeText(requireContext(), "Failed to add post: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void loadPosts() {
+        if (currentUser == null) return;
+
+        String trainerId = currentUser.getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        // Listen for real-time updates from Firestore
+        db.collection("users")
+                .document(trainerId)
+                .collection("posts")
+                .orderBy("timestamp") // optional, if you have a timestamp field
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Toast.makeText(requireContext(),
+                                "Error loading posts: " + error.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (value != null) {
+                        // Convert QuerySnapshot to a list of PostModel
+                        List<PostModel> updatedPostList = new ArrayList<>();
+                        for (DocumentSnapshot doc : value.getDocuments()) {
+                            PostModel post = doc.toObject(PostModel.class);
+                            if (post != null) {
+                                updatedPostList.add(post);
+                            }
+                        }
+                        // Update adapter data
+                        postAdapter.setData(updatedPostList);
+                    }
                 });
     }
 
