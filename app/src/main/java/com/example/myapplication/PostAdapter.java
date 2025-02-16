@@ -18,10 +18,12 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
 
     private List<TrainerProfileFragment.PostModel> postList;
     private final String trainerId;
+    private boolean canDeletePosts;
 
-    public PostAdapter(List<TrainerProfileFragment.PostModel> postList, String tId) {
+    public PostAdapter(List<TrainerProfileFragment.PostModel> postList, String tId, boolean canDeletePosts) {
         this.postList = postList;
         this.trainerId = tId;
+        this.canDeletePosts = canDeletePosts;
     }
 
     @NonNull
@@ -36,6 +38,13 @@ public class PostAdapter extends RecyclerView.Adapter<PostAdapter.PostViewHolder
     public void onBindViewHolder(@NonNull PostViewHolder holder, int position) {
         TrainerProfileFragment.PostModel post = postList.get(position);
         holder.bind(post);
+
+        // Show or hide the delete button
+        if (canDeletePosts) {
+            holder.deletePostButton.setVisibility(View.VISIBLE);
+        } else {
+            holder.deletePostButton.setVisibility(View.GONE);
+        }
 
         holder.deletePostButton.setOnClickListener(v -> {
             // get Firestore ref

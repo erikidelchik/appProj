@@ -117,7 +117,7 @@ public class TrainerProfileFragment extends Fragment {
         trainerPostsRecyclerView = view.findViewById(R.id.trainerPostsRecyclerView);
 
         // Create adapter and set to RecyclerView
-        postAdapter = new PostAdapter(postList,currentUser.getUid());
+        postAdapter = new PostAdapter(postList,currentUser.getUid(),true);
         trainerPostsRecyclerView.setAdapter(postAdapter);
 
         // Optionally set a LayoutManager

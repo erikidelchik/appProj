@@ -16,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.fragment.app.Fragment;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.navigation.NavigationView;
@@ -166,10 +167,22 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
 
     @Override
     public void onBackPressed() {
-        if(drawerLayout.isDrawerOpen(GravityCompat.START)){
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            // If the drawer is open, close it first
             drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            // Check if the current fragment is HomeFragment
+            Fragment currentFragment = getSupportFragmentManager().findFragmentById(R.id.fragment_container);
+            if (!(currentFragment instanceof HomeFragment)) {
+                // If we are NOT in HomeFragment, go to HomeFragment
+                getSupportFragmentManager().beginTransaction()
+                        .replace(R.id.fragment_container, new HomeFragment())
+                        .commit();
+            } else {
+                // If we're already in HomeFragment, do the default back action
+                super.onBackPressed();
+            }
         }
-        else
-            super.onBackPressed();
     }
+
 }

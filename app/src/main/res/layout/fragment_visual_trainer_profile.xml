@@ -49,12 +49,22 @@
             android:layout_marginLeft="24dp"
             android:layout_marginTop="76dp"
             android:layout_marginRight="24dp"
-            android:text="posts:"
+            android:text="Posts:"
             android:textAlignment="center"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profilePic" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/trainerPostsRecyclerView"
+            android:layout_width="379dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="92dp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.509"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/text_view_posts" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
