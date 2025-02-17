@@ -47,6 +47,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.firebase.storage)
     implementation(libs.junit.junit)
+    implementation(libs.firebase.messaging)
     testImplementation(libs.junit)
     testImplementation(libs.mockito)
     testImplementation(libs.robolectric)

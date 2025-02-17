@@ -23,6 +23,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 
 public class MainMenuActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -76,9 +77,12 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
             navigationView.setCheckedItem(R.id.nav_home);
         }
 
+        getUserToken();
 
         //update profile pic
         setProfilePictureInNavBar();
+
+
 
     }
 
@@ -163,6 +167,30 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
                     .load(profilePictureUrl)
                     .into(profPic);
         }
+    }
+
+    private void getUserToken(){
+        FirebaseMessaging.getInstance().getToken()
+                .addOnCompleteListener(task -> {
+                    if (!task.isSuccessful()) {
+                        Log.w("a", "Fetching FCM registration token failed", task.getException());
+                        return;
+                    }
+                    // Get new FCM registration token
+                    String token = task.getResult();
+
+                    // Save token in Firestore
+                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                    FirebaseAuth auth = FirebaseAuth.getInstance();
+                    if (auth.getCurrentUser() != null) {
+                        String userId = auth.getCurrentUser().getUid();
+                        db.collection("users")
+                                .document(userId)
+                                .update("fcmToken", token)
+                                .addOnSuccessListener(aVoid -> Log.d("a", "FCM token updated successfully"))
+                                .addOnFailureListener(e -> Log.e("a", "Failed to update FCM token", e));
+                    }
+                });
     }
 
     @Override

@@ -11,17 +11,24 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.imageview.ShapeableImageView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TrainerVisualProfileFragment extends Fragment {
 
@@ -29,7 +36,7 @@ public class TrainerVisualProfileFragment extends Fragment {
     private static final String ARG_USERNAME = "ARG_USERNAME";
     private static final String ARG_PROFILE_PIC = "ARG_PROFILE_PIC";
 
-    private String userId;
+    private String trainerId;
     private String username;
     private String profilePictureUrl;
 
@@ -39,11 +46,13 @@ public class TrainerVisualProfileFragment extends Fragment {
     private RecyclerView trainerPostsRecyclerView;
     private PostAdapter postAdapter;
     private List<TrainerProfileFragment.PostModel> postList = new ArrayList<>();
+    private Button followButton;
+    private FirebaseAuth auth;
 
-    public static TrainerVisualProfileFragment newInstance(String userId, String username, String profilePictureUrl) {
+    public static TrainerVisualProfileFragment newInstance(String trainerId, String username, String profilePictureUrl) {
         TrainerVisualProfileFragment fragment = new TrainerVisualProfileFragment();
         Bundle args = new Bundle();
-        args.putString(ARG_USER_ID, userId);
+        args.putString(ARG_USER_ID, trainerId);
         args.putString(ARG_USERNAME, username);
         args.putString(ARG_PROFILE_PIC, profilePictureUrl);
         fragment.setArguments(args);
@@ -53,8 +62,10 @@ public class TrainerVisualProfileFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        auth = FirebaseAuth.getInstance();
+
         if (getArguments() != null) {
-            userId = getArguments().getString(ARG_USER_ID);
+            trainerId = getArguments().getString(ARG_USER_ID);
             username = getArguments().getString(ARG_USERNAME);
             profilePictureUrl = getArguments().getString(ARG_PROFILE_PIC);
         }
@@ -78,6 +89,7 @@ public class TrainerVisualProfileFragment extends Fragment {
         trainerNameView = view.findViewById(R.id.trainer_name);
         // Initialize RecyclerView
         trainerPostsRecyclerView = view.findViewById(R.id.trainerPostsRecyclerView);
+        followButton = view.findViewById(R.id.buttonFollow);
         
         trainerNameView.setText(username);
 
@@ -89,23 +101,114 @@ public class TrainerVisualProfileFragment extends Fragment {
 
 
         // Create adapter and set to RecyclerView
-        postAdapter = new PostAdapter(postList,userId,false);
+        postAdapter = new PostAdapter(postList,trainerId,false);
 
         trainerPostsRecyclerView.setAdapter(postAdapter);
         // Optionally set a LayoutManager
         trainerPostsRecyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
         loadPosts();
+
+        // 1) Hide follow button if user is the same as trainer
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser != null && currentUser.getUid().equals(trainerId)) {
+            // The person viewing is the trainer themself - no need to follow
+            followButton.setVisibility(View.GONE);
+        } else {
+            // The person viewing is different -> check if already following
+            checkIfAlreadyFollowing(trainerId);
+        }
+
+        // 2) Set the button click
+        followButton.setOnClickListener(v -> {
+            if (followButton.getText().toString().equals("Follow")) {
+                followTrainer();
+            } else {
+                unfollowTrainer();
+            }
+        });
+    }
+
+    private void checkIfAlreadyFollowing(String trainerId) {
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser == null) return;
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        String currentUserId = currentUser.getUid();
+
+        // Check if doc with currentUserId exists in trainer's followers subcollection
+        db.collection("users")
+                .document(trainerId)
+                .collection("followers")
+                .document(currentUserId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        // Already following
+                        followButton.setText("Unfollow");
+                    } else {
+                        // Not following
+                        followButton.setText("Follow");
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Fallback
+                    followButton.setText("Follow");
+                });
+    }
+
+    private void followTrainer() {
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser == null) return;
+        String currentUserId = currentUser.getUid();
+
+        Map<String, Object> followData = new HashMap<>();
+        followData.put("followerEmail", currentUser.getEmail());
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        // Add a doc in the trainer's "followers" subcollection
+        db.collection("users")
+                .document(trainerId)
+                .collection("followers")
+                .document(currentUserId)
+                .set(followData) // can be empty or store some data (timestamp, etc.)
+                .addOnSuccessListener(aVoid -> {
+                    followButton.setText("Unfollow");
+                    Toast.makeText(requireContext(), "You're now following this trainer!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(requireContext(), "Failed to follow: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    private void unfollowTrainer() {
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser == null) return;
+        String currentUserId = currentUser.getUid();
+
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users")
+                .document(trainerId)
+                .collection("followers")
+                .document(currentUserId)
+                .delete()
+                .addOnSuccessListener(aVoid -> {
+                    followButton.setText("Follow");
+                    Toast.makeText(requireContext(), "Unfollowed!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(requireContext(), "Failed to unfollow: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void loadPosts() {
-        if (userId == null) return;
+        if (trainerId == null) return;
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         // Listen for real-time updates from Firestore
         db.collection("users")
-                .document(userId)
+                .document(trainerId)
                 .collection("posts")
                 .orderBy("timestamp", Query.Direction.DESCENDING) // optional, if you have a timestamp field
                 .addSnapshotListener((value, error) -> {

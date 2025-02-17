@@ -42,17 +42,31 @@
             app:shapeAppearanceOverlay="@style/roundedImgView" />
 
 
+        <Button
+            android:id="@+id/buttonFollow"
+            android:layout_width="198dp"
+            android:layout_height="52dp"
+            android:layout_marginTop="88dp"
+            android:backgroundTint="@color/blueLight"
+            android:text="Follow"
+            android:textSize="20dp"
+            android:textColor="@color/black"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profilePic" />
+
         <TextView
             android:id="@+id/text_view_posts"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_marginLeft="24dp"
-            android:layout_marginTop="76dp"
+            android:layout_marginTop="216dp"
             android:layout_marginRight="24dp"
             android:text="Posts:"
             android:textAlignment="center"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.562"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profilePic" />
 
@@ -60,7 +74,7 @@
             android:id="@+id/trainerPostsRecyclerView"
             android:layout_width="379dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="92dp"
+            android:layout_marginTop="40dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.509"
             app:layout_constraintStart_toStartOf="parent"
