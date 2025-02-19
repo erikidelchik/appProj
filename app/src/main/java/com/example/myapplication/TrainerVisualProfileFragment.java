@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.RatingBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +49,9 @@ public class TrainerVisualProfileFragment extends Fragment {
     private List<TrainerProfileFragment.PostModel> postList = new ArrayList<>();
     private Button followButton;
     private FirebaseAuth auth;
+
+    private RatingBar ratingBar;
+    private TextView ratingSummary;
 
     public static TrainerVisualProfileFragment newInstance(String trainerId, String username, String profilePictureUrl) {
         TrainerVisualProfileFragment fragment = new TrainerVisualProfileFragment();
@@ -90,8 +94,12 @@ public class TrainerVisualProfileFragment extends Fragment {
         // Initialize RecyclerView
         trainerPostsRecyclerView = view.findViewById(R.id.trainerPostsRecyclerView);
         followButton = view.findViewById(R.id.buttonFollow);
-        
+
         trainerNameView.setText(username);
+
+        // Initialize rating UI components
+        ratingBar = view.findViewById(R.id.ratingBar);
+        ratingSummary = view.findViewById(R.id.ratingSummary);
 
         // Load the profile pic via Glide
         Glide.with(requireContext())
@@ -109,21 +117,37 @@ public class TrainerVisualProfileFragment extends Fragment {
 
         loadPosts();
 
-        // 1) Hide follow button if user is the same as trainer
         FirebaseUser currentUser = auth.getCurrentUser();
         if (currentUser != null && currentUser.getUid().equals(trainerId)) {
-            // The person viewing is the trainer themself - no need to follow
+            // Trainer viewing their own profile:
             followButton.setVisibility(View.GONE);
-        } else {
-            // The person viewing is different -> check if already following
-            checkIfAlreadyFollowing(trainerId);
+            // Hide the RatingBar input since a trainer shouldn’t rate themselves.
+            ratingBar.setVisibility(View.GONE);
+            ratingSummary.setVisibility(View.GONE);
         }
 
-        // 2) Set the button click
+        else {
+            // For non-trainer users, check following status and allow rating.
+            checkIfAlreadyFollowing(trainerId);
+            // Listen for rating changes and update the rating in Firestore.
+            ratingBar.setOnRatingBarChangeListener((ratingBar, rating, fromUser) -> {
+                if (fromUser) {
+                    updateUserRating(rating);
+                }
+            });
+            // Check if the current user already rated this trainer.
+            checkIfAlreadyRated();
+        }
+
+        // Listen for rating changes (by any user) to update the average rating and count.
+        loadRatings();
+
+        // Follow/Unfollow button functionality
         followButton.setOnClickListener(v -> {
             if (followButton.getText().toString().equals("Follow")) {
                 followTrainer();
-            } else {
+            }
+            else {
                 unfollowTrainer();
             }
         });
@@ -230,6 +254,83 @@ public class TrainerVisualProfileFragment extends Fragment {
                         }
                         // Update adapter data
                         postAdapter.setData(updatedPostList);
+                    }
+                });
+    }
+
+    // ------------------ Rating Methods ------------------
+
+    // Checks if the current user already rated this trainer and sets the RatingBar accordingly.
+    private void checkIfAlreadyRated() {
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser == null) return;
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users")
+                .document(trainerId)
+                .collection("ratings")
+                .document(currentUser.getUid())
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Double ratingVal = documentSnapshot.getDouble("rating");
+                        if (ratingVal != null) {
+                            ratingBar.setRating(ratingVal.floatValue());
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Optionally handle the error.
+                });
+    }
+
+    // Updates (or creates) the user's rating for the trainer.
+    private void updateUserRating(float rating) {
+        FirebaseUser currentUser = auth.getCurrentUser();
+        if (currentUser == null) return;
+        String currentUserId = currentUser.getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        Map<String, Object> ratingData = new HashMap<>();
+        ratingData.put("rating", rating);
+        ratingData.put("timestamp", FieldValue.serverTimestamp());
+
+        db.collection("users")
+                .document(trainerId)
+                .collection("ratings")
+                .document(currentUserId)
+                .set(ratingData)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(requireContext(), "Rating submitted!", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(requireContext(), "Failed to submit rating: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
+    }
+
+    // Listens for changes in the ratings subcollection and updates the average rating and count.
+    private void loadRatings() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users")
+                .document(trainerId)
+                .collection("ratings")
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Toast.makeText(requireContext(),
+                                "Error loading ratings: " + error.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (value != null) {
+                        int ratingCount = value.size();
+                        float totalRating = 0;
+                        for (DocumentSnapshot doc : value.getDocuments()) {
+                            Double ratingVal = doc.getDouble("rating");
+                            if (ratingVal != null) {
+                                totalRating += ratingVal.floatValue();
+                            }
+                        }
+                        float averageRating = ratingCount > 0 ? totalRating / ratingCount : 0;
+                        ratingSummary.setText("Average Rating: " + averageRating + " (" + ratingCount + " ratings)");
                     }
                 });
     }

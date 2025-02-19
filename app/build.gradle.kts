@@ -48,6 +48,8 @@ dependencies {
     implementation(libs.firebase.storage)
     implementation(libs.junit.junit)
     implementation(libs.firebase.messaging)
+    implementation(libs.googleservices)
+    implementation(libs.firebaseui)
     testImplementation(libs.junit)
     testImplementation(libs.mockito)
     testImplementation(libs.robolectric)

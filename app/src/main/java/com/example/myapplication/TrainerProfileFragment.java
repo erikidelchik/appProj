@@ -58,6 +58,8 @@ public class TrainerProfileFragment extends Fragment {
     EditText postContentEditText;
     Button addPostButton;
 
+    private TextView ratingSummary;
+
     private RecyclerView trainerPostsRecyclerView;
     private PostAdapter postAdapter;
     private List<PostModel> postList = new ArrayList<>();
@@ -103,6 +105,8 @@ public class TrainerProfileFragment extends Fragment {
         postContentEditText = view.findViewById(R.id.postContentEditText);
         addPostButton = view.findViewById(R.id.addPostButton);
 
+        ratingSummary = view.findViewById(R.id.ratingSummary);
+
         prefs = requireContext().getSharedPreferences("profilePictures", Context.MODE_PRIVATE);
 
         // Set user's name from SharedPreferences
@@ -125,6 +129,8 @@ public class TrainerProfileFragment extends Fragment {
 
         // Now load the posts (or listen for them)
         loadPosts();
+
+        loadRatings();
 
         // Save button logic
         save_button.setOnClickListener(v -> {
@@ -342,5 +348,32 @@ public class TrainerProfileFragment extends Fragment {
 
         public String getDocId() { return docId; }
         public void setDocId(String docId) { this.docId = docId; }
+    }
+
+    private void loadRatings() {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("users")
+                .document(currentUser.getUid())
+                .collection("ratings")
+                .addSnapshotListener((value, error) -> {
+                    if (error != null) {
+                        Toast.makeText(requireContext(),
+                                "Error loading ratings: " + error.getMessage(),
+                                Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                    if (value != null) {
+                        int ratingCount = value.size();
+                        float totalRating = 0;
+                        for (DocumentSnapshot doc : value.getDocuments()) {
+                            Double ratingVal = doc.getDouble("rating");
+                            if (ratingVal != null) {
+                                totalRating += ratingVal.floatValue();
+                            }
+                        }
+                        float averageRating = ratingCount > 0 ? totalRating / ratingCount : 0;
+                        ratingSummary.setText("Average Rating: " + averageRating + " (" + ratingCount + " ratings)");
+                    }
+                });
     }
 }

@@ -36,6 +36,8 @@ robolectric = {group = "org.robolectric", name = "robolectric", version = "4.9"}
 powermockapi = {group="org.powermock",name="powermock-api-mockito2",version="2.0.9"}
 powermockmodule = {group="org.powermock",name="powermock-module-junit4",version="2.0.9"}
 firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
+googleservices = {group="com.google.gms", name = "google-services", version = "4.3.15"}
+firebaseui = {group="com.firebaseui",name= "firebase-ui-auth", version="8.0.0"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

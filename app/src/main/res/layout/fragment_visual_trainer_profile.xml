@@ -46,35 +46,61 @@
             android:id="@+id/buttonFollow"
             android:layout_width="198dp"
             android:layout_height="52dp"
-            android:layout_marginTop="88dp"
+            android:layout_marginTop="84dp"
             android:backgroundTint="@color/blueLight"
             android:text="Follow"
-            android:textSize="20dp"
             android:textColor="@color/black"
+            android:textSize="20dp"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.504"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profilePic" />
+
+        <TextView
+            android:id="@+id/ratingSummary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:paddingTop="8dp"
+            android:text="Average Rating: 0 (0 ratings)"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.51"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/buttonFollow" />
+
+        <RatingBar
+            android:id="@+id/ratingBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:isIndicator="false"
+            android:numStars="5"
+            android:rating="0"
+            android:stepSize="1.0"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/ratingSummary" />
 
         <TextView
             android:id="@+id/text_view_posts"
             android:layout_width="match_parent"
             android:layout_height="30dp"
             android:layout_marginLeft="24dp"
-            android:layout_marginTop="216dp"
+            android:layout_marginTop="96dp"
             android:layout_marginRight="24dp"
             android:text="Posts:"
             android:textAlignment="center"
             android:textSize="18sp"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.562"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/profilePic" />
+            app:layout_constraintTop_toBottomOf="@+id/ratingSummary" />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/trainerPostsRecyclerView"
             android:layout_width="379dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
+            android:layout_marginTop="44dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.509"
             app:layout_constraintStart_toStartOf="parent"

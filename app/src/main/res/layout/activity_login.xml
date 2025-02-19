@@ -47,10 +47,10 @@
         android:textColorHint="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/logo_login"
-        app:layout_constraintVertical_bias="0.334" />
+        app:layout_constraintVertical_bias="0.122" />
 
     <EditText
         android:id="@+id/input_pass"
@@ -74,24 +74,26 @@
         android:id="@+id/error_text_view"
         android:layout_width="match_parent"
         android:layout_height="30dp"
-        app:layout_constraintBottom_toTopOf="@+id/login_button"
-        app:layout_constraintEnd_toEndOf="@+id/input_pass"
-        app:layout_constraintStart_toStartOf="@+id/input_pass"
-        app:layout_constraintTop_toBottomOf="@+id/input_pass"
-        android:layout_marginRight="30dp"
         android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
         android:gravity="center"
         android:text=""
         android:textColor="@color/red"
-        />
+        app:layout_constraintBottom_toTopOf="@+id/login_button"
+        app:layout_constraintEnd_toEndOf="@+id/input_pass"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/input_pass"
+        app:layout_constraintTop_toBottomOf="@+id/input_pass"
+        app:layout_constraintVertical_bias="0.21" />
 
     <TextView
         android:id="@+id/logo_login"
-        android:layout_width="92dp"
-        android:layout_height="51dp"
-        android:text="Login"
+        android:layout_width="341dp"
+        android:layout_height="66dp"
+        android:text="FitMatch"
+        android:textAlignment="center"
         android:textColor="@color/white"
-        android:textSize="34dp"
+        android:textSize="40dp"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
@@ -114,12 +116,22 @@
         android:textSize="20dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="@+id/input_pass"
-        app:layout_constraintHorizontal_bias="0.598"
+        app:layout_constraintHorizontal_bias="0.56"
         app:layout_constraintStart_toStartOf="@+id/input_pass"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.739"
+        app:layout_constraintVertical_bias="0.611"
         app:rippleColor="@color/white"
         app:strokeColor="@color/white" />
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/google_sign_in_button"
+        android:layout_width="276dp"
+        android:layout_height="59dp"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="20dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/login_button" />
 
     <TextView
         android:id="@+id/register_text"
@@ -132,8 +144,9 @@
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.575"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/login_button"
-        app:layout_constraintVertical_bias="0.238" />
+        app:layout_constraintVertical_bias="0.372" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -44,7 +44,7 @@
             android:id="@+id/saveButton"
             android:layout_width="133dp"
             android:layout_height="54dp"
-            android:layout_marginTop="64dp"
+            android:layout_marginTop="36dp"
             android:backgroundTint="@color/blueLight"
             android:text="save"
             android:textColor="@color/black"
@@ -53,6 +53,19 @@
             app:layout_constraintHorizontal_bias="0.501"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/view" />
+
+        <TextView
+            android:id="@+id/ratingSummary"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="24dp"
+            android:paddingTop="8dp"
+            android:text="Average Rating: 0 (0 ratings)"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.497"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/saveButton" />
 
         <TextView
             android:id="@+id/nameTextView"
