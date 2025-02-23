@@ -50,7 +50,7 @@ public class TrainerProfileFragment extends Fragment {
     SharedPreferences prefs;
     RelativeLayout loadingOverlay;
 
-    EditText full_name_field;
+    EditText phone_number_field;
     Button save_button;
     TextView name_text;
 
@@ -98,7 +98,7 @@ public class TrainerProfileFragment extends Fragment {
         change_pic_button = view.findViewById(R.id.changeProfilePicButton);
         loadingOverlay = requireActivity().findViewById(R.id.loadingOverlay);
         save_button = view.findViewById(R.id.saveButton);
-        full_name_field = view.findViewById(R.id.full_name);
+        phone_number_field = view.findViewById(R.id.phone_number);
         name_text = view.findViewById(R.id.nameTextView);
 
         // Trainer-specific views for creating posts
@@ -108,6 +108,8 @@ public class TrainerProfileFragment extends Fragment {
         ratingSummary = view.findViewById(R.id.ratingSummary);
 
         prefs = requireContext().getSharedPreferences("profilePictures", Context.MODE_PRIVATE);
+
+        SharedPreferences prefs2 = requireContext().getSharedPreferences("phoneNumbers", Context.MODE_PRIVATE);
 
         // Set user's name from SharedPreferences
         if (currentUser != null) {
@@ -134,11 +136,12 @@ public class TrainerProfileFragment extends Fragment {
 
         // Save button logic
         save_button.setOnClickListener(v -> {
-            String newName = full_name_field.getText().toString();
-            if (!newName.isEmpty()) {
-                name_text.setText(newName);
-                prefs.edit().putString(currentUser.getUid() + "fullname", newName).apply();
-            } else {
+            String phoneNum = phone_number_field.getText().toString();
+            if (!phoneNum.isEmpty()) {
+                name_text.setText(phoneNum);
+                prefs2.edit().putString(currentUser.getUid() + "phoneNum", phoneNum).apply();
+            }
+            else {
                 Toast.makeText(requireContext(), "Cannot save an empty name!", Toast.LENGTH_SHORT).show();
             }
         });

@@ -1,12 +1,14 @@
 package com.example.myapplication;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -22,6 +24,7 @@ public class TrainersAdapter extends RecyclerView.Adapter<TrainersAdapter.Traine
 
     private Context context;
     private List<Trainer> trainers;
+    SharedPreferences prefs;
 
     public TrainersAdapter(Context context, List<Trainer> trainers) {
         this.context = context;
@@ -56,9 +59,18 @@ public class TrainersAdapter extends RecyclerView.Adapter<TrainersAdapter.Traine
 
         // Message button click listener
         holder.messageButton.setOnClickListener(v -> {
-//            Intent intent = new Intent(context, MessageActivity.class);
-//            intent.putExtra("trainerUsername", trainer.getUsername());
-//            context.startActivity(intent);
+            // Retrieve the phone number from SharedPreferences
+            prefs = context.getSharedPreferences("phoneNumbers", Context.MODE_PRIVATE);
+            String phoneNum = prefs.getString(trainer.getUserId() + "phoneNum", "");
+
+            if (!phoneNum.isEmpty()) {
+                holder.phoneText.setVisibility(View.VISIBLE);
+                holder.phoneText.setText("Phone: " + phoneNum);
+            }
+            else {
+                holder.phoneText.setVisibility(View.VISIBLE);
+                holder.phoneText.setText("No phone number found.");
+            }
         });
 
         // navigate to trainer's profile
@@ -97,12 +109,14 @@ public class TrainersAdapter extends RecyclerView.Adapter<TrainersAdapter.Traine
         ImageView profilePic;
         TextView name;
         Button messageButton;
+        TextView phoneText;
 
         public TrainerViewHolder(@NonNull View itemView) {
             super(itemView);
             profilePic = itemView.findViewById(R.id.trainerProfilePic);
             name = itemView.findViewById(R.id.trainerName);
             messageButton = itemView.findViewById(R.id.messageButton);
+            phoneText = itemView.findViewById(R.id.trainerPhone);
         }
     }
 }

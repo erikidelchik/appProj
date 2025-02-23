@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
@@ -24,6 +25,7 @@
             android:orientation="vertical"
             android:paddingStart="16dp">
 
+            <!-- Trainer Name -->
             <TextView
                 android:id="@+id/trainerName"
                 android:layout_width="wrap_content"
@@ -32,16 +34,33 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <Button
-                android:id="@+id/messageButton"
+            <!-- Horizontal layout for the button + phone number -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Message"
-                android:layout_marginTop="8dp"
-                android:backgroundTint="@color/blueLight"/>
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
 
+                <!-- Message Button -->
+                <Button
+                    android:id="@+id/messageButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Show Phone"
+                    android:backgroundTint="@color/blueLight" />
+
+                <!-- TextView for phone number -->
+                <TextView
+                    android:id="@+id/trainerPhone"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:textColor="@android:color/black"
+                    android:visibility="gone"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
         </LinearLayout>
-
     </LinearLayout>
 
 </LinearLayout>
