@@ -4,6 +4,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="primaryDark">#3262C4</color>
     <color name="orangelight">#776EAD</color>
+    <color name="blueLight">#71A5FF</color>
     <color name="red">#E90A0A</color>
     
 </resources>

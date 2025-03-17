@@ -13,6 +13,8 @@ googleGmsGoogleServices = "4.4.2"
 firebaseAuth = "23.1.0"
 firebaseFirestore = "25.1.1"
 firebaseStorage = "21.0.1"
+junitJunit = "4.12"
+firebaseMessaging = "24.1.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -28,7 +30,14 @@ firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore
 imagepicker = {group ="com.github.dhaval2404", name = "imagepicker", version = "2.1"}
 firebase-storage = { group = "com.google.firebase", name = "firebase-storage", version.ref = "firebaseStorage" }
 glide = {group="com.github.bumptech.glide",name="glide",version = "4.16.0"}
-
+mockito = {group="org.mockito",name="mockito-core",version="3.+"}
+junit-junit = { group = "junit", name = "junit", version.ref = "junitJunit" }
+robolectric = {group = "org.robolectric", name = "robolectric", version = "4.9"}
+powermockapi = {group="org.powermock",name="powermock-api-mockito2",version="2.0.9"}
+powermockmodule = {group="org.powermock",name="powermock-module-junit4",version="2.0.9"}
+firebase-messaging = { group = "com.google.firebase", name = "firebase-messaging", version.ref = "firebaseMessaging" }
+googleservices = {group="com.google.gms", name = "google-services", version = "4.3.15"}
+firebaseui = {group="com.firebaseui",name= "firebase-ui-auth", version="8.0.0"}
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

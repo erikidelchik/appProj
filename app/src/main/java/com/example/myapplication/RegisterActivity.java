@@ -2,29 +2,22 @@ package com.example.myapplication;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.window.OnBackInvokedDispatcher;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.view.GravityCompat;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.recaptcha.internal.zzaq;
-import com.google.firebase.Firebase;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -32,8 +25,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class Register extends AppCompatActivity {
+public class RegisterActivity extends AppCompatActivity {
 
+    private RegisterValidator validator = new RegisterValidator();
     private Button register_button;
     private TextView email, username, password, passwordConform;
 
@@ -41,6 +35,8 @@ public class Register extends AppCompatActivity {
 
     FirebaseAuth auth;
     FirebaseFirestore database;
+
+    private CheckBox checkboxTrainer;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,6 +53,8 @@ public class Register extends AppCompatActivity {
         password = findViewById(R.id.input_pass);
         passwordConform = findViewById(R.id.input_passConfrm);
 
+        checkboxTrainer = findViewById(R.id.checkBoxTrainer);
+
 
         register_button.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -68,10 +66,10 @@ public class Register extends AppCompatActivity {
                 passwordConform_p = passwordConform.getText().toString();
 
                 //if all fields are valid
-                String fieldsResult = checkIfAllFieldsValid(email_p, username_p, password_p, passwordConform_p);
+                String fieldsResult = validator.checkIfAllFieldsValid(email_p,username_p,password_p,passwordConform_p);
 
                 if (!fieldsResult.equals("all valid")) {
-                    Toast.makeText(Register.this, fieldsResult, Toast.LENGTH_SHORT).show();
+                    Toast.makeText(RegisterActivity.this, fieldsResult, Toast.LENGTH_SHORT).show();
                     return;
                 }
                 register_button.setEnabled(false);
@@ -85,9 +83,10 @@ public class Register extends AppCompatActivity {
                                 register_button.setEnabled(true);
 
                                 if (task.isSuccessful() && task.getResult() != null && !task.getResult().isEmpty()) {
-                                    Toast.makeText(Register.this, "username already exist", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(RegisterActivity.this, "username already exist", Toast.LENGTH_SHORT).show();
                                 } else {
-                                    registerUser(email_p, username_p, password_p);
+                                    boolean isTrainer = checkboxTrainer.isChecked();
+                                    registerUser(email_p, username_p, password_p, isTrainer);
                                 }
                             }
                         });
@@ -97,7 +96,7 @@ public class Register extends AppCompatActivity {
 
     }
 
-    private void registerUser(String email, String username, String password) {
+    private void registerUser(String email, String username, String password, boolean isTrainer) {
 
         //firebase func to register new user
         auth.createUserWithEmailAndPassword(email, password)
@@ -113,15 +112,16 @@ public class Register extends AppCompatActivity {
                                 Map<String, Object> userData = new HashMap<>();
                                 userData.put("username", username);
                                 userData.put("email", email);
+                                userData.put("isTrainer", isTrainer);
 
                                 database.collection("users").document(userId)
                                         .set(userData)
                                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                                             @Override
                                             public void onSuccess(Void unused) {
-                                                Toast.makeText(Register.this, "Account created successfully!", Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(RegisterActivity.this, "Account created successfully!", Toast.LENGTH_SHORT).show();
                                                 // Navigate to Login
-                                                Intent intent = new Intent(Register.this, Login.class);
+                                                Intent intent = new Intent(RegisterActivity.this, LoginActivity.class);
                                                 startActivity(intent);
                                                 finish();
 
@@ -129,28 +129,18 @@ public class Register extends AppCompatActivity {
                                         }).addOnFailureListener(new OnFailureListener() {
                                             @Override
                                             public void onFailure(@NonNull Exception e) {
-                                                Toast.makeText(Register.this, e.toString(), Toast.LENGTH_SHORT).show();
+                                                Toast.makeText(RegisterActivity.this, e.toString(), Toast.LENGTH_SHORT).show();
                                             }
                                         });
                             }
-                        } else {
-                            Toast.makeText(Register.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                        }
+
+                        else {
+                            Toast.makeText(RegisterActivity.this, "Registration failed: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     }
                 });
     }
 
-    public String checkIfAllFieldsValid(String email, String username, String password, String confPass) {
-        if (!email.isEmpty() && !username.isEmpty() && !password.isEmpty() && !confPass.isEmpty()) {
-            if (password.equals(confPass)) {
-                return "all valid";
-            } else {
-                return "passwords are not matching";
-            }
-        } else {
-            return "all fields must be filled";
-        }
-
-    }
 
 }
