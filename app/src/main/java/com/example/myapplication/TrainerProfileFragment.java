@@ -38,6 +38,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class TrainerProfileFragment extends Fragment {
@@ -138,7 +139,6 @@ public class TrainerProfileFragment extends Fragment {
         save_button.setOnClickListener(v -> {
             String phoneNum = phone_number_field.getText().toString();
             if (!phoneNum.isEmpty()) {
-                name_text.setText(phoneNum);
                 prefs2.edit().putString(currentUser.getUid() + "phoneNum", phoneNum).apply();
             }
             else {
@@ -153,8 +153,6 @@ public class TrainerProfileFragment extends Fragment {
                 Glide.with(requireContext())
                         .load(profilePictureUrl)
                         .into(profPic);
-            } else {
-                loadProfilePicture(currentUser.getUid());
             }
         }
 
@@ -169,7 +167,8 @@ public class TrainerProfileFragment extends Fragment {
                             imagePickerLauncher.launch(intent);
                             return null;
                         });
-            } else {
+            }
+            else {
                 Toast.makeText(requireContext(), "Not signed in", Toast.LENGTH_SHORT).show();
             }
         });
@@ -225,8 +224,8 @@ public class TrainerProfileFragment extends Fragment {
                             .load(downloadUrl)
                             .into(profPic);
 
-                    // If you have a method in your Activity to update nav bar pic
-                    // ((MainMenuActivity) requireActivity()).setProfilePictureInNavBar();
+                    // update nav bar pic
+                    ((MainMenuActivity) requireActivity()).setProfilePictureInNavBar();
 
                     loadingOverlay.setVisibility(View.GONE);
                     Toast.makeText(requireContext(), "Profile picture updated!", Toast.LENGTH_SHORT).show();
@@ -237,25 +236,6 @@ public class TrainerProfileFragment extends Fragment {
                 });
     }
 
-    private void loadProfilePicture(String userId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("users").document(userId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        String profilePictureUrl = documentSnapshot.getString("profilePicture");
-                        if (profilePictureUrl != null && !profilePictureUrl.isEmpty()) {
-                            Glide.with(requireContext())
-                                    .load(profilePictureUrl)
-                                    .into(profPic);
-                            prefs.edit().putString(currentUser.getUid() + "profilePictureUrl", profilePictureUrl).apply();
-                        }
-                    }
-                })
-                .addOnFailureListener(e ->
-                        Toast.makeText(requireContext(), "Failed to load profile picture: " + e.getMessage(), Toast.LENGTH_SHORT).show()
-                );
-    }
 
     /**
      * Trainer-specific method to add a new post to Firestore.
@@ -300,6 +280,13 @@ public class TrainerProfileFragment extends Fragment {
                 .orderBy("timestamp", Query.Direction.DESCENDING) // optional, if you have a timestamp field
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
+
+                        // If logged out, ignore the error (so i don't get the toast message on sign-out)
+                        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+                            postAdapter.setData(Collections.emptyList());
+                            return;
+                        }
+
                         Toast.makeText(requireContext(),
                                 "Error loading posts: " + error.getMessage(),
                                 Toast.LENGTH_SHORT).show();
@@ -360,6 +347,13 @@ public class TrainerProfileFragment extends Fragment {
                 .collection("ratings")
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
+
+                        // If logged out, ignore the error (so i don't get the toast message on sign-out)
+                        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+                            postAdapter.setData(Collections.emptyList());
+                            return;
+                        }
+
                         Toast.makeText(requireContext(),
                                 "Error loading ratings: " + error.getMessage(),
                                 Toast.LENGTH_SHORT).show();
@@ -374,6 +368,7 @@ public class TrainerProfileFragment extends Fragment {
                                 totalRating += ratingVal.floatValue();
                             }
                         }
+
                         float averageRating = ratingCount > 0 ? totalRating / ratingCount : 0;
                         ratingSummary.setText("Average Rating: " + averageRating + " (" + ratingCount + " ratings)");
                     }

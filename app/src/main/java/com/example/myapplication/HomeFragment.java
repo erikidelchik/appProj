@@ -22,6 +22,7 @@ import java.util.List;
 
 public class HomeFragment extends Fragment {
 
+
     private RecyclerView trainersRecyclerView;
     private TrainersAdapter trainersAdapter;
     private List<Trainer> trainersList = new ArrayList<>();

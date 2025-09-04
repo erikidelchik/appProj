@@ -23,6 +23,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.firebase.firestore.Query;
 
 import java.util.ArrayList;
@@ -52,6 +53,7 @@ public class TrainerVisualProfileFragment extends Fragment {
 
     private RatingBar ratingBar;
     private TextView ratingSummary;
+    private ListenerRegistration postsReg;
 
     public static TrainerVisualProfileFragment newInstance(String trainerId, String username, String profilePictureUrl) {
         TrainerVisualProfileFragment fragment = new TrainerVisualProfileFragment();
@@ -237,6 +239,13 @@ public class TrainerVisualProfileFragment extends Fragment {
                 .orderBy("timestamp", Query.Direction.DESCENDING) // optional, if you have a timestamp field
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
+
+                        // If logged out, ignore the error (so i don't get the toast message on sign-out)
+                        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+                            postAdapter.setData(Collections.emptyList());
+                            return;
+                        }
+
                         Toast.makeText(requireContext(),
                                 "Error loading posts: " + error.getMessage(),
                                 Toast.LENGTH_SHORT).show();
@@ -256,6 +265,7 @@ public class TrainerVisualProfileFragment extends Fragment {
                         postAdapter.setData(updatedPostList);
                     }
                 });
+
     }
 
     // ------------------ Rating Methods ------------------
@@ -315,6 +325,13 @@ public class TrainerVisualProfileFragment extends Fragment {
                 .collection("ratings")
                 .addSnapshotListener((value, error) -> {
                     if (error != null) {
+
+                        // If logged out, ignore the error (so i don't get the toast message on sign-out)
+                        if (FirebaseAuth.getInstance().getCurrentUser() == null) {
+                            postAdapter.setData(Collections.emptyList());
+                            return;
+                        }
+
                         Toast.makeText(requireContext(),
                                 "Error loading ratings: " + error.getMessage(),
                                 Toast.LENGTH_SHORT).show();
@@ -334,5 +351,6 @@ public class TrainerVisualProfileFragment extends Fragment {
                     }
                 });
     }
+
 
 }

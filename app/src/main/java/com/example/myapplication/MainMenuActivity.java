@@ -8,7 +8,9 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
@@ -34,6 +36,8 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
     private View headerView;
     private FirebaseUser currentUser;
     private boolean isTrainer;
+    private ImageView profPic;
+    private RelativeLayout loadingOverlay;
 
 
     @Override
@@ -52,6 +56,10 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
         // Access the header view
         headerView = navigationView.getHeaderView(0); // Get the first header view
         TextView uname = headerView.findViewById(R.id.nameOfUser);
+
+        profPic = headerView.findViewById(R.id.profilePicNavBar);
+
+        loadingOverlay = findViewById(R.id.loadingOverlay);
 
         //assign isTrainer to true or false
         getTrainerStatus();
@@ -78,9 +86,11 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
         }
 
         getUserToken();
-
+        
+        loadingOverlay.setVisibility(View.VISIBLE);
         //update profile pic
         setProfilePictureInNavBar();
+        loadingOverlay.setVisibility(View.GONE);
 
 
 
@@ -148,6 +158,8 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
         else if(item.getItemId()==R.id.nav_logout){
             auth.signOut();
             Intent intent = new Intent(this, LoginActivity.class);
+            //clear activity stack
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivity(intent);
             finish();
         }
@@ -161,12 +173,39 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
         String userID = currentUser.getUid();
         SharedPreferences prefs = getSharedPreferences("profilePictures", Context.MODE_PRIVATE);
         String profilePictureUrl = prefs.getString(userID + "profilePictureUrl", null);
-        ImageView profPic = headerView.findViewById(R.id.profilePicNavBar);
         if (profilePictureUrl != null) {
             Glide.with(this)
                     .load(profilePictureUrl)
                     .into(profPic);
         }
+        else{
+            loadProfilePicture(userID);
+        }
+    }
+
+    private void loadProfilePicture(String userId) {
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        db.collection("users").document(userId)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        String profilePictureUrl = documentSnapshot.getString("profilePicture");
+                        if (profilePictureUrl != null && !profilePictureUrl.isEmpty()) {
+                            // Use Glide to load and cache the image
+                            Glide.with(MainMenuActivity.this)
+                                    .load(profilePictureUrl)
+                                    .into(profPic);
+
+                            // Save the URL in SharedPreferences
+                            SharedPreferences prefs = getSharedPreferences("profilePictures", Context.MODE_PRIVATE);
+                            prefs.edit().putString(currentUser.getUid() + "profilePictureUrl", profilePictureUrl).apply();
+                        }
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(MainMenuActivity.this, "Failed to load profile picture: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                });
     }
 
     private void getUserToken(){

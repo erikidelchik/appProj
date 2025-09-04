@@ -119,18 +119,15 @@ public class ProfileFragment extends Fragment {
             }
         });
 
-
-        //load profile image
-        String profilePictureUrl = prefs.getString(currentUser.getUid() + "profilePictureUrl", null);
-        if(profilePictureUrl!=null){
-            // Load the image from the cached URL
-            Glide.with(requireContext())
-                    .load(profilePictureUrl)
-                    .into(profPic);
-        }
-        else if (currentUser != null) {
-            // If not found in SharedPreferences, fetch from Firestore
-            loadProfilePicture(currentUser.getUid());
+        
+        // Load profile picture from SharedPreferences or Firestore
+        if (currentUser != null) {
+            String profilePictureUrl = prefs.getString(currentUser.getUid() + "profilePictureUrl", null);
+            if (profilePictureUrl != null) {
+                Glide.with(requireContext())
+                        .load(profilePictureUrl)
+                        .into(profPic);
+            }
         }
 
 
@@ -210,7 +207,6 @@ public class ProfileFragment extends Fragment {
                     ((MainMenuActivity) requireActivity()).setProfilePictureInNavBar();
 
                     loadingOverlay.setVisibility(View.GONE);
-
                     Toast.makeText(requireContext(), "Profile picture updated!", Toast.LENGTH_SHORT).show();
                 })
                 .addOnFailureListener(e -> {
@@ -218,32 +214,5 @@ public class ProfileFragment extends Fragment {
                     Toast.makeText(requireContext(), "Failed to update Firestore: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                 });
     }
-
-    private void loadProfilePicture(String userId) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        db.collection("users").document(userId)
-                .get()
-                .addOnSuccessListener(documentSnapshot -> {
-                    if (documentSnapshot.exists()) {
-                        String profilePictureUrl = documentSnapshot.getString("profilePicture");
-                        if (profilePictureUrl != null && !profilePictureUrl.isEmpty()) {
-                            // Use Glide to load and cache the image
-                            Glide.with(requireContext())
-                                    .load(profilePictureUrl)
-                                    .into(profPic);
-
-                            // Save the URL in SharedPreferences
-                            prefs.edit().putString(currentUser.getUid() + "profilePictureUrl", profilePictureUrl).apply();
-                        }
-                    }
-                })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(requireContext(), "Failed to load profile picture: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
-    }
-
-
-
 
 }

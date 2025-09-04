@@ -212,15 +212,16 @@ public class LoginActivity extends AppCompatActivity {
                                 Toast.makeText(LoginActivity.this, "Error checking user: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                             });
                 }
-            } else {
+            }
+            else {
                 // Sign in failed
                 if (response == null) {
                     // User pressed back button
                     Toast.makeText(this, "Sign in cancelled", Toast.LENGTH_SHORT).show();
-                } else {
-                    Toast.makeText(this, "Error: " + response.getError().getMessage(), Toast.LENGTH_SHORT).show();
                 }
-                error_text.setText("Google sign in failed");
+                else {
+                    error_text.setText("Error: " + response.getError().getMessage());
+                }
             }
         }
     }
