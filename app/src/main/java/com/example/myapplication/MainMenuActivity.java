@@ -15,6 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -43,6 +44,11 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        SharedPreferences prefs = getSharedPreferences("settings", MODE_PRIVATE);
+        String theme = prefs.getString("theme", "system");
+        AppCompatDelegate.setDefaultNightMode(mapMode(theme));
+
         setContentView(R.layout.activity_main);
 
         FirebaseFirestore db = FirebaseFirestore.getInstance();
@@ -94,6 +100,14 @@ public class MainMenuActivity extends AppCompatActivity implements NavigationVie
 
 
 
+    }
+
+    private int mapMode(String theme) {
+        switch (theme) {
+            case "dark":  return AppCompatDelegate.MODE_NIGHT_YES;
+            case "light": return AppCompatDelegate.MODE_NIGHT_NO;
+            default:      return AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM;
+        }
     }
 
     //assign isTrainer to true or false
